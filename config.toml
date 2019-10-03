@@ -1,6 +1,7 @@
 baseURL = "http://cemalonder.com/"
 languageCode = "en"
 defaultContentLanguage = "en"                             # en / zh-cn / ... (This field determines which i18n file to use)
+defaultContentLanguageInSubdir = true
 title = "Cemal Önder"
 preserveTaxonomyNames = true
 enableRobotsTXT = true
@@ -232,3 +233,34 @@ copyright = ""            # default: author.name ↓        # 默认为下面配
 #  section = ["HTML", "RSS"]
 #  taxonomy = ["HTML", "RSS"]
 #  taxonomyTerm = ["HTML"]
+
+[languages]
+  [languages.en]
+    contentDir = "content/english"
+    languageName = "English"
+    weight = 10
+  [languages.tr]
+    contentDir = "content/turkish"
+    languageName = "tr"
+    weight = 20
+
+[[languages.tr.menu.main]]             # config your menu              # 配置目录
+  name = "Ana Sayfa"
+  weight = 10
+  identifier = "home"
+  url = "/"
+[[languages.tr.menu.main]]
+  name = "Arşiv"
+  weight = 20
+  identifier = "archives"
+  url = "/post/"
+[[languages.tr.menu.main]]
+  name = "Etiketler"
+  weight = 30
+  identifier = "tags"
+  url = "/tags/"
+[[languages.tr.menu.main]]
+  name = "Kategoriler"
+  weight = 40
+  identifier = "categories"
+  url = "/categories/"
