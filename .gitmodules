@@ -1,5 +1,5 @@
 
 [submodule "public"]
 	path = public
-	url = git@github.com:cmlonder/cmlonder.github.io
+	url = git@github.com:cmlonder/cmlonder.github.io.git
 	branch = master
