@@ -1,0 +1,102 @@
+# ===== title =====
+archive:
+  other: "Arşiv"
+
+tags:
+  other: "Etiketler"
+
+categories:
+  other: "Kategoriler"
+
+# ===== footer =====
+powered:
+  other: "Powered by %s"
+
+theme:
+  other: "Tema"
+
+siteUV:
+  other: "site uv: %s"
+
+sitePV:
+  other: "site pv: %s"
+
+pagePV:
+  other: "%s kez okundu"
+
+# ===== post =====
+prevPage:
+  other: "Önceki"
+
+nextPage:
+  other: "Sonraki"
+
+prevPost:
+  other: "Önceki"
+
+nextPost:
+  other: "Sonraki"
+
+toc:
+  other: "İçerikler"
+
+readMore:
+  other: "Daha fazla oku..."
+
+reward:
+  other: "Ödül"
+
+rewardAlipay:
+  other: "alipay"
+
+rewardWechat:
+  other: "wechat"
+
+wordCount:
+  one: "{{ .Count }} kelime"
+  other: "{{ .Count }} kelimeler"
+
+readingTime:
+  one: "{{ .Count }} okuma süresi"
+  other: "{{ .Count }} okuma süresi"
+
+outdatedInfoWarningBefore:
+  other: "[Not] Güncellendi "
+
+outdatedInfoWarningAfter:
+  other: ".Bu paylaşım güncel olmayabilir"
+
+# ===== content license =====
+author:
+  other: "Yazar"
+
+lastMod:
+  other: "Son Değişiklik"
+
+markdown:
+  other: "Markdown"
+
+seeMarkDown:
+  other: "Markdown versiyonu »"
+
+license:
+  other: "Lisans"
+
+# ===== counter =====
+archiveCounter:
+  one: "{{ .Count }} Gönderi"
+  other: "{{ .Count }} Gönderi"
+
+tagCounter:
+  one: "{{ .Count }} Etiket"
+  other: "{{ .Count }} Etiket"
+
+zeroTagCounter:
+  other: "No tags"
+
+categoryCounter:
+  one: "{{ .Count }} Kategori"
+  other: "{{ .Count }} Kategori"
+
+zeroCategoryCounter:
+  other: "Kategori bulunamadı"
