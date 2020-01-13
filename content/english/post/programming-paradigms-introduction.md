@@ -110,11 +110,36 @@ by the language to be declarative but it doesn't have to; think about an example
 
 
 ### Functional Programming
+They don't change anything. Inputs -> Outputs. It is older than computers, it is based on mathematical logic, lambda calculus,
+Alonzo Church, nearly 1930. [kaynak]
+Pure functions. Output of function only depend on its inputs. Immutable data, stateless. When data is created, it is never
+mutated. Functions as Arguments, high order functions. Functions as return value.
+
+Branch 1 -> Inputs -> Outputs -> Input for next sequence
+So it can not effect other branch 2. So there is no side effect.
+
+Haskell
 #### Show Me The Code
 
 ### Procedural Programming
+Set of subroutines. Define & call functions, change states.
 #### Show Me The Code
 
+### Object Oriented Programming
+Create, manipulate, access objects. Near to 1967. Flexible way to construct and compose modules. People says that
+functional programming is immutable and no side effect while oop is full of side effects and mutable. This is not true,
+it is how people makes oop's have side effects. When you create your object, if you are generating setters automatically or
+if you are using Lombok - I like it if it is used with awareness, otherwise I find it dangereous when developers automatically
+puts @Setter or @Data on the top of the class without thinking immutubility or side effects. - then this makes your code
+mutable.
+
+Scala
+### Show Me The Code
+
+
+Be open minded, there is no need to be fanatic for one of them. We can argue with our team which one is the best suite
+for our needs and we can change our coding style whenever required. Also our programming languages nowadays are multi-paradigm
+which means we don't have to stick one of them in our project. We can use each paradigm whenever we need in the program flow.
 
 # References
 - Goto and Branch Instructions, Dr. Orion Lawlor, https://www.cs.uaf.edu/courses/cs301/2014-fall/notes/goto/

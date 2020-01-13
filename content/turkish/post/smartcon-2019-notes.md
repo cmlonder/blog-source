@@ -12,7 +12,8 @@ author: "cemal"
 
 Bilgilendirici ve keyifli bir konferans sonrası notlarımı paylaşmak istiyorum. Beni en çok etkileyen Citus oldu, Microsoft
 ise partnerleri ve yaptığı yatırımlarla Açık Kaynak konusundaki vizyonunu nasıl daha da geliştirdiğini göstermiş oldu.
-Sunumların şablonları şu şekilde; problemi ortaya koy, şirketin buna getirdiği çözümden bahset.
+Sunumların şablonları şu şekilde; problemi ortaya koy, şirketin buna getirdiği çözümden bahset. Paneller ise sohbet
+havasında geçti.
 
 [smartcon2019](https://www.smartcon.com/istanbul-2019/)
 
@@ -26,6 +27,8 @@ Sunumların şablonları şu şekilde; problemi ortaya koy, şirketin buna getir
 durumlardan ortaya çıkıyor..
 * Otonom teknolojiler burada ön plana çıkıyor -> kendi kendine yanlışı düzeltme, güvenliğini sağlama, insan hatalarının olduğu
 örneğin; "operasyonel sıkıcı işleri" otomatize etme
+
+Oracle'ın bunlara çözümü, dünyanın ilk [otonom veritabanı](https://www.oracle.com/database/autonomous-database/feature.html)
 
 ## Hazine Avcıları: Veriden Değer Yaratmak
 > Hamit Hamutcu, smartcon & Analytics Center, Kurucu Ortak  
@@ -102,6 +105,7 @@ içerik (context) bağımsız bir cümle ile sorduğumuzda. Çünkü şu cümley
 Çevirisi:
 
    * **She** didn't know what to do. Although **he** was actually a **doctor**, he could not maintain his composure.
+   ``
 Yani hala bu bias'ın geçerliliği var diyebiliriz.
 
 ### Aktivite Biası;
