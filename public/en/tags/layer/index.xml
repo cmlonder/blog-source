@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>layer on Cemal Önder</title>
+    <link>http://cemalonder.com/en/tags/layer/</link>
+    <description>Recent content in layer on Cemal Önder</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 13 Sep 2019 08:37:57 +0300</lastBuildDate>
+    
+	<atom:link href="http://cemalonder.com/en/tags/layer/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>5 Layer and 5 Tier Architecture</title>
+      <link>http://cemalonder.com/en/post/5-layer-and-5-tier-architecture/</link>
+      <pubDate>Fri, 13 Sep 2019 08:37:57 +0300</pubDate>
+      
+      <guid>http://cemalonder.com/en/post/5-layer-and-5-tier-architecture/</guid>
+      <description>There are differences between N-layer and N-tier definitions. We can start with explaining those first:
+5-layer Architecture Layering is logical separation that you implement in your application. It has a relation with N-Tier but we will move onto it later:
+
+Presentation This is how your application is shown to the user. You can think about it is a look and feel of the application. But it is very similar to the UI layer, today&amp;rsquo;s world with the improvement of JavaScript (client-side-rendering solutions like React, Angular, etc.</description>
+    </item>
+    
+  </channel>
+</rss>
