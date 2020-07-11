@@ -3,3 +3,6 @@
 	path = public
 	url = git@github.com:cmlonder/cmlonder.github.io.git
 	branch = master
+[submodule "themes/academic"]
+	path = themes/academic
+	url = https://github.com/gcushen/hugo-academic.git
