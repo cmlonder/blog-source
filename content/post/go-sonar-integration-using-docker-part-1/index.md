@@ -1,7 +1,7 @@
 ---
 # Documentation: https://sourcethemes.com/academic/docs/managing-content/
 
-title: "Go Sonar Integration Using Docker - Chapter 1"
+title: "Go Sonar Integration Using Docker - Part 1"
 subtitle: ""
 summary: ""
 authors: ["admin"]
@@ -30,8 +30,8 @@ projects: []
 
 ### Overview
 In this series, I'm going to integrate a Go project with Sonar using Docker.
-[Chapter 1](/post/go-sonar-integration-using-containers-chapter-1) will be about creating a go application, writing unit tests, and generating code coverage then sending this
-report to SonarQube.[Chapter 2 - TBD]() will be about using Sonar to fail pipeline based on the Quality report.
+[Part 1](/post/go-sonar-integration-using-containers-part-1) will be about creating a go application, writing unit tests, and generating code coverage then sending this
+report to SonarQube.[Part 2 - TBD]() will be about using Sonar to fail pipeline based on the Quality report.
 
 ### 1. Create a Simple Todo App
 Let's first create an empty project and initialize go modules.
@@ -270,11 +270,11 @@ INFO: Final Memory: 13M/47M
 INFO: ------------------------------------------------------------------------
 ```
 
-**NOTE:** You can not use http://localhost:9000 instead of http://192.168.0.11:9000 since sonar-scanner-cli Docker container runs
+**NOTE:** You can not use [http://localhost:9000]() instead of [http://192.168.0.11:9000]() since sonar-scanner-cli Docker container runs
 on its host and **localhost** for that container is not same address with localhost of yours (at least in Windows, Mac's 
 docker daemon may be editing etc/hosts files so users in Mac MAY be using localhost even they are working in Docker)
 
-Now if you visit [http://localhost:9000] again, you will see there is 1 project now. Click on that and here is our report:
+Now if you visit [http://localhost:9000]() again, you will see there is 1 project now. Click on that and here is our report:
 
 ![sonar analyse](sonar-analyse.png)
 
@@ -282,7 +282,7 @@ Since Sonar has default Quality Gates configured, I'm now passing all of the sco
 
 ### Summary
 In this post, we write a simple Go project, generate coverage report, configure SonarScanner, and analyze our project in Sonar.
-The next chapter will be about integrating this project to Jenkins and reject our pipeline based on the project quality report.
+The [next part - TBD]() will be about integrating this project to Jenkins and reject our pipeline based on the project quality report.
 
 You can find source code of this project in [Github](https://github.com/cmlonder/go-dockerized-coverage)
 
