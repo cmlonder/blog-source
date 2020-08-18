@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>clean code | Cemal Önder</title>
+    <link>http://cemalonder.com/tag/clean-code/</link>
+      <atom:link href="http://cemalonder.com/tag/clean-code/index.xml" rel="self" type="application/rss+xml" />
+    <description>clean code</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 13 Jan 2020 07:14:38 +0300</lastBuildDate>
+    <image>
+      <url>http://cemalonder.com/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
+      <title>clean code</title>
+      <link>http://cemalonder.com/tag/clean-code/</link>
+    </image>
+    
+    <item>
+      <title>Welcome Back Clean Code</title>
+      <link>http://cemalonder.com/post/welcome-back-clean-code/welcome-back-clean-code/</link>
+      <pubDate>Mon, 13 Jan 2020 07:14:38 +0300</pubDate>
+      <guid>http://cemalonder.com/post/welcome-back-clean-code/welcome-back-clean-code/</guid>
+      <description>&lt;p&gt;I recently read an 
+&lt;a href=&#34;https://overreacted.io/goodbye-clean-code/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;article&lt;/a&gt; from Dan Abramov who is the creator of Redux.
+Even if I agree his article point:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Don’t be a clean code zealot. Clean code is not a goal. It’s an attempt to make some sense out of the immense complexity of systems we’re dealing with.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;I don&amp;rsquo;t agree how misleading his article title and how not descriptive his example. Because this kind of titles &amp;ldquo;Goodbye Clean Code&amp;rdquo;
+gives power to another kind of zealots who hates some Software Principles or hates someone around him mentioning this kind of
+principles. When you title your article like this, it is too easy being used as a power in social medias to be offensive against
+software principles just by mentioning your article without any arguments to use with your own. Also think about how many people exist who
+never know Clean Coding principles but using your article just as a weapon against it instead of his own experiences.
+Rather I like the people who has deep knowledge of Clean Coding and Refactoring and can give some advice where to use them
+properly and giving me awareness of it (which is probably aim of this article but I find it misleading and insufficient)&lt;/p&gt;
+&lt;p&gt;Just for an idea, you can google &amp;ldquo;OOP sucks&amp;rdquo; or ironically &amp;ldquo;Goodbye Redux&amp;rdquo; to see
+how zealots use this kind of titles where I both like OOP and Redux.&lt;/p&gt;
+&lt;p&gt;Dan mentions 2 points to give you the awareness beside his title, lets have a look at them:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Firstly, I didn’t talk to the person who wrote it. I rewrote the code and checked it in without their input. Even if it was an improvement (which I don’t believe anymore), this is a terrible way to go about it&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;I think this is the right way you should do when you are truly doing refactoring. You don&amp;rsquo;t have to talk the person directly
+if you are doing refactoring, you should be in trust with unit tests. And if the code has a little indicators of clean coding
+than you should have general idea why the code is structured like that or your team must have some documentations for exceptions.
+What if the person who writes the line leaves the job? You still contact them personally? No, we don&amp;rsquo;t. We make unit &amp;amp; integration tests,
+properly structure our code with internally documenting (in our code) and finally we may have externally documentation for exceptional cases.&lt;/p&gt;
+&lt;p&gt;And Dan&amp;rsquo;s second mention:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;For example, we later needed many special cases and behaviors for different handles on different shapes&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;When I first read these lines, I say myself &amp;ldquo;finally I will see the point and understand what happened in above code, and
+satisfied with his argument in title&amp;rdquo;. It did not happen. He gave me lots of lines above which than I was expecting to see some evidence or
+some real results. But instead I read something like &amp;ldquo;special cases&amp;rdquo; which does not give me the idea.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;What special cases did he need?&lt;/li&gt;
+&lt;li&gt;What should we learn when we refactored like above?&lt;/li&gt;
+&lt;li&gt;Which points we should be more careful?&lt;/li&gt;
+&lt;li&gt;How did your &amp;ldquo;refactorings&amp;rdquo; are merged, any Pull Request? Who is the reviewer, where is the discussion, did your boss call only you?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;As I said before, I know his point. But title, arguments he show and how article is being mentioned in twitter, reddit and
+lots of other social medias is dangerous. If you trust that who uses this article has deep knowledge in software principles,
+software architectures etc. than we don&amp;rsquo;t have any discussions here. When I start searching if there are some people thinking like me
+than I see this 
+&lt;a href=&#34;https://www.reddit.com/r/programming/comments/eng355/goodbye_clean_code/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;discussion&lt;/a&gt; on reddit and it
+pleased me that they exist.&lt;/p&gt;
+&lt;p&gt;If Dan wants to say &amp;ldquo;Great power comes with great responsibility&amp;rdquo;, I agree. But it is already mentioned by Stan Lee and can
+be applied in any area of our live with example real life scenarios. If we know all this kind of principles, we should be careful when &amp;amp; where to apply them.
+But to get this experience we should first read &amp;amp; get deep knowledge of them, make some mistake and learn from our mistakes.
+Otherwise it is too easy for people never read refactoring, clean coding, YAGNI, DRY etc. and only mentioning around this
+kind of articles as an excuse of not knowing this principles.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

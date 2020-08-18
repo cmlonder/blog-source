@@ -1,0 +1,1326 @@
+<!DOCTYPE html><html lang="en-us" >
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.8.0">
+  <meta name="yandex-verification" content="17769ee43c427b2a" />
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Cemal Önder">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="Apache Kafka is a distributed streaming platform that is used to send data between applications in real-time. In this tutorial, we are going to use Apache Kafka to communicate our different threads using multiple consumers to read messages from same channel.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="http://cemalonder.com/post/spring-boot-kafka-tutorial/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-1/css/all.min.css" integrity="sha256-4w9DunooKSr3MFXHXWyFER38WmPdm361bQS/2KUWZbU=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" integrity="sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM=" crossorigin="anonymous">
+    
+
+    
+
+    
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.1.2/lazysizes.min.js" integrity="sha256-Md1qLToewPeKjfAHU1zyPwOutccPAm5tahnaw7Osw0A=" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+        
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.css">
+
+  
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-147978839-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+
+  function gtag() {
+      dataLayer.push(arguments);
+  }
+
+  function trackOutboundLink(url, target) {
+    gtag('event', 'click', {
+         'event_category': 'outbound',
+         'event_label': url,
+         'transport_type': 'beacon',
+         'event_callback': function () {
+           if (target !== '_blank') {
+             document.location = url;
+           }
+         }
+    });
+    console.debug("Outbound link clicked: " + url);
+  }
+
+  function onClickCallback(event) {
+    if ((event.target.tagName !== 'A') || (event.target.host === window.location.host)) {
+      return;
+    }
+    trackOutboundLink(event.target, event.target.getAttribute('target'));  
+  }
+
+  gtag('js', new Date());
+  gtag('config', 'UA-147978839-1', { 'anonymize_ip': true });
+
+  
+  document.addEventListener('click', onClickCallback, false);
+</script>
+
+
+  
+
+
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_32x32_fill_lanczos_center_2.png">
+  <link rel="apple-touch-icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png">
+
+  <link rel="canonical" href="http://cemalonder.com/post/spring-boot-kafka-tutorial/">
+
+  
+  
+  
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="Cemal Önder">
+  <meta property="og:url" content="http://cemalonder.com/post/spring-boot-kafka-tutorial/">
+  <meta property="og:title" content="Spring Boot Kafka Tutorial | Cemal Önder">
+  <meta property="og:description" content="Apache Kafka is a distributed streaming platform that is used to send data between applications in real-time. In this tutorial, we are going to use Apache Kafka to communicate our different threads using multiple consumers to read messages from same channel."><meta property="og:image" content="http://cemalonder.com/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png">
+  <meta property="twitter:image" content="http://cemalonder.com/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2020-07-17T01:11:38&#43;03:00">
+    
+    <meta property="article:modified_time" content="2020-07-17T01:11:38&#43;03:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://cemalonder.com/post/spring-boot-kafka-tutorial/"
+  },
+  "headline": "Spring Boot Kafka Tutorial",
+  
+  "datePublished": "2020-07-17T01:11:38+03:00",
+  "dateModified": "2020-07-17T01:11:38+03:00",
+  
+  "author": {
+    "@type": "Person",
+    "name": "Cemal Önder"
+  },
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "Cemal Önder",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://cemalonder.com/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png"
+    }
+  },
+  "description": "Apache Kafka is a distributed streaming platform that is used to send data between applications in real-time. In this tutorial, we are going to use Apache Kafka to communicate our different threads using multiple consumers to read messages from same channel."
+}
+</script>
+
+  
+
+  
+
+
+  
+  
+  
+  
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.js" integrity="sha256-5VhCqFam2Cn+yjw61zbBNrbHVJ6SRydPeKopYlngbiQ=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.css" integrity="sha256-zQ0LblD/Af8vOppw18+2anxsuaz3pWYyVWi+bTvTH8Q=" crossorigin="anonymous">
+  
+  <script>
+  window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#2962ff",
+          "text": "#fff"
+        },
+        "button": {
+          "background": "#fff",
+          "text": "#2962ff"
+        }
+      },
+      "theme": "classic",
+      "content": {
+        "message": "This website uses cookies to ensure you get the best experience on our website.",
+        "dismiss": "Got it!",
+        "link": "Learn more",
+        "href": "/privacy/"
+      }
+    })});
+  </script>
+
+
+
+  
+
+
+
+
+
+  <title>Spring Boot Kafka Tutorial | Cemal Önder</title>
+
+</head>
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+
+
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/">Cemal Önder</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/">Cemal Önder</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-start" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#posts"><span>Posts</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/about/"><span>About</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+      
+      <li class="nav-item">
+        <a class="nav-link js-search" href="#" aria-label="Search"><i class="fas fa-search" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+      <li class="nav-item dropdown theme-dropdown">
+        <a href="#" class="nav-link js-theme-selector" data-toggle="dropdown" aria-haspopup="true">
+          <i class="fas fa-palette" aria-hidden="true"></i>
+        </a>
+        <div class="dropdown-menu">
+          <a href="#" class="dropdown-item js-set-theme-light">
+            <span>Light</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-dark">
+            <span>Dark</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-auto">
+            <span>Automatic</span>
+          </a>
+        </div>
+      </li>
+      
+
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  <article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1>Spring Boot Kafka Tutorial</h1>
+
+  
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+  
+  
+  <div>
+    
+
+  
+  <span ><a href="/author/cemal-onder/">Cemal Önder</a></span>
+  </div>
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    Jul 17, 2020
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    6 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/category/integration/">integration</a></span>
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      <h3 id="1-overview">1. Overview</h3>
+<p>Apache Kafka is a distributed streaming platform that is used to send data between applications in real-time. It is 
+good to have an overview of some Kafka terminology before going further;</p>
+<p><strong>Topic:</strong> Messages are published to</p>
+<p><strong>Producer:</strong> An application who can publish its messages to a topic</p>
+<p><strong>Consumer:</strong> An application that can consume messages from its subscribed topic.
+Most simply, a producer writes messages to topics, and consumers can read messages from its subscribed topics. 
+This allows applications to communicate asynchronously and fulfill high payloads.</p>
+<p>In this tutorial we are going to create a game announcement system;</p>
+<p><strong>Topic:</strong> Games</p>
+<p><strong>Producer:</strong> /games/score/?name=${playerName} endpoint where we are going to call with curl request when a 
+A new score is made in our virtual football game.</p>
+<p><strong>Consumer:</strong> There will be 2 consumers. Radio and TV. They will consume our message and use it their business logic. 
+This will show us how we can get the benefit of the publisher/subscriber system.</p>
+<h3 id="2-application-setup">2. Application Setup</h3>
+<p>We need to prepare our environment by running Apache Kafka and its dependency on ZooKeeper. Kafka provides a simple 
+ZooKeeper server for local purposes, but in production, it should be configured separately. Let&rsquo;s stick with basics in our tutorial:</p>
+<ul>
+<li>Download Apache Kafka 
+<a href="https://kafka.apache.org/quickstart" target="_blank" rel="noopener">here</a></li>
+<li>Untar it:</li>
+</ul>
+<pre><code>tar -xzf kafka_2.12-2.5.0.tgz
+cd kafka_2.12-2.5.0
+</code></pre>
+<h4 id="21-start-zookeeper-server">2.1. Start ZooKeeper Server</h4>
+<p>Kafka uses the ZooKeeper server to manage its topics. Start it:</p>
+<p><strong>Linux</strong></p>
+<pre><code>./bin/zookeeper-server-start.sh config/zookeeper.properties
+</code></pre>
+<p><strong>Windows</strong></p>
+<pre><code>.\bin\windows\zookeeper-server-start.bat .\config\zookeeper.properties
+</code></pre>
+<h4 id="22-start-kafka-server">2.2. Start Kafka Server</h4>
+<p>Start kafka server after ZooKeeper is up &amp; ready:</p>
+<p><strong>Linux</strong></p>
+<pre><code>./bin/kafka-server-start.sh config/server.properties
+</code></pre>
+<p><strong>Windows</strong></p>
+<pre><code>.\bin\windows\kafka-server-start.bat .\config\server.properties
+</code></pre>
+<h4 id="23-create-a-topic">2.3. Create a topic</h4>
+<p>For simplicity, we are going to create a topic before our application is started. Create games topic with the following:</p>
+<p><strong>Linux</strong></p>
+<pre><code>.\bin \kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic scores
+</code></pre>
+<p><strong>Windows</strong></p>
+<pre><code>.\bin\windows\kafka-topics.bat --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic scores
+</code></pre>
+<h4 id="24-list-topics">2.4. List topics</h4>
+<p>List topics in the Kafka, we will see scores topic is created.</p>
+<p><strong>Linux</strong></p>
+<pre><code>.\bin\kafka-topics.bat –list –bootstrap-server localhost:9092
+</code></pre>
+<p><strong>Windows</strong></p>
+<pre><code>.\bin\windows\kafka-topics.bat --list --bootstrap-server localhost:9092
+</code></pre>
+<h4 id="25-create-the-project">2.5. Create the Project</h4>
+<p>Now we can start creating our application. We need the following dependencies:</p>
+<p><strong>spring-boot-starter:</strong> Provides our core Spring libraries.</p>
+<p><strong>spring-boot-starter-web:</strong> We need it to provide a simple web server and REST operations</p>
+<p><strong>spring-kafka:</strong> Wraps Kafka to abstract messaging operations</p>
+<p><strong>spring-boot-starter-test:</strong> For core test libraries</p>
+<p><strong>spring-kafka-test:</strong> provides testing utils for Kafka</p>
+<p>Our final pom.xml:</p>
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+       xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+   &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+   &lt;parent&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+      &lt;version&gt;2.2.6.RELEASE&lt;/version&gt;
+      &lt;relativePath/&gt; &lt;!-- lookup parent from repository --&gt;
+   &lt;/parent&gt;
+   &lt;groupId&gt;com.cemalonder.tutorials&lt;/groupId&gt;
+   &lt;artifactId&gt;spring-boot-kafka-tutorial&lt;/artifactId&gt;
+   &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+   &lt;name&gt;spring-boot-kafka-tutorial&lt;/name&gt;
+   &lt;description&gt;Spring Boot kafka integration tutorial&lt;/description&gt;
+
+   &lt;properties&gt;
+      &lt;java.version&gt;1.8&lt;/java.version&gt;
+   &lt;/properties&gt;
+
+   &lt;dependencies&gt;
+      &lt;dependency&gt;
+         &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+         &lt;artifactId&gt;spring-boot-starter&lt;/artifactId&gt;
+      &lt;/dependency&gt;
+
+      &lt;dependency&gt;
+         &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+         &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+      &lt;/dependency&gt;
+
+      &lt;dependency&gt;
+         &lt;groupId&gt;org.springframework.kafka&lt;/groupId&gt;
+         &lt;artifactId&gt;spring-kafka&lt;/artifactId&gt;
+      &lt;/dependency&gt;
+
+      &lt;dependency&gt;
+         &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+         &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+         &lt;scope&gt;test&lt;/scope&gt;
+         &lt;exclusions&gt;
+            &lt;exclusion&gt;
+               &lt;groupId&gt;org.junit.vintage&lt;/groupId&gt;
+               &lt;artifactId&gt;junit-vintage-engine&lt;/artifactId&gt;
+            &lt;/exclusion&gt;
+         &lt;/exclusions&gt;
+      &lt;/dependency&gt;
+      &lt;dependency&gt;
+         &lt;groupId&gt;org.springframework.kafka&lt;/groupId&gt;
+         &lt;artifactId&gt;spring-kafka-test&lt;/artifactId&gt;
+         &lt;scope&gt;test&lt;/scope&gt;
+      &lt;/dependency&gt;
+   &lt;/dependencies&gt;
+
+   &lt;build&gt;
+      &lt;plugins&gt;
+         &lt;plugin&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+         &lt;/plugin&gt;
+      &lt;/plugins&gt;
+   &lt;/build&gt;
+
+&lt;/project&gt;
+</code></pre>
+<p>Or you can also use Spring Initializr to generate above pom.xml quickly with the following selections:
+<img src="spring-initialzr.png" alt="spring initalizr"></p>
+<h3 id="3-application-configuration">3. Application Configuration</h3>
+<p>We need to configure our application.yml/properties with the following:</p>
+<p>By default, our Kafka server started on port 9092 when we run in our terminal. We will use the default port and 
+Serializer/Deserializer provided by Kafka. We configure our application to run on port 9000 and as the last step we 
+give a group-id as a default group-id but we will change it per Consumer in the following steps.</p>
+<pre><code>server:
+  port: 9000
+
+spring:
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: group-id
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+</code></pre>
+<h3 id="4-create-a-controller">4. Create a Controller</h3>
+<p>We provide /games/score endpoint with the name request param. This controller then delegates its job to Scores class with incoming name.</p>
+<pre><code>@RestController
+@RequestMapping(value = &quot;/games&quot;)
+public class GameController {
+
+  private final Scores scores;
+
+  @Autowired
+  public GameController(Scores scores) {
+    this.scores = scores;
+  }
+
+  @PostMapping(value = &quot;/score&quot;)
+  public void makeAnnouncement(@RequestParam(&quot;name&quot;) String name) {
+    this.scores.sendMessage(name);
+  }
+
+}
+</code></pre>
+<h3 id="5-create-a-producer">5. Create a Producer</h3>
+<p>Create producer package and Scores file inside it as following:</p>
+<pre><code>@Service
+public class Scores {
+
+  private final Logger logger = LoggerFactory.getLogger(Scores.class);
+  private static final String TOPIC = &quot;scores&quot;;
+
+  private final KafkaTemplate&lt;String, String&gt; kafkaTemplate;
+
+  @Autowired
+  public Scores(KafkaTemplate&lt;String, String&gt; kafkaTemplate) {
+    this.kafkaTemplate = kafkaTemplate;
+  }
+
+  public void sendMessage(String name) {
+    logger.info(&quot;Publishing message to {} topic&quot;, TOPIC);
+    this.kafkaTemplate.send(TOPIC, name + &quot; is scored a new goal!&quot;);
+  }
+
+}
+</code></pre>
+<p>This class is annotated with Service annotation and it&rsquo;s now inside Spring Context. We are using KafkaTemplate to 
+easily send messages to the given topic, since our class is already in Spring Context we can use Autowired annotation 
+in our constructor and inject KafkaTemplate to our class.  Then we are calling KafkaTemplate’s send method with the 
+score topic we already created and message for the topic.</p>
+<h3 id="6-create-consumers">6. Create Consumers</h3>
+<p>We will create two Consumers for the score topic. First, create consumers package and TvConsumer class in it as follows:</p>
+<h4 id="61-first-consumer-tv">6.1. First Consumer: TV</h4>
+<p>This class is annotated with Service annotation and its now inside Spring Context similar to the provider above. 
+We are using KafkaListener annotation provided by spring-kafka to listen given topic. It is listening to players&rsquo; 
+topics with its unique groupId which is the tv in this case. By giving different groupId’s, multiple consumers can listen to the same topic. 
+In the end, the TvConsumer class logs a simple message that shows it is handled by the TV.</p>
+<pre><code>@Service
+public class TvConsumer {
+
+  private final Logger logger = LoggerFactory.getLogger(TvConsumer.class);
+  private Integer score = 0;
+
+  @KafkaListener(topics = &quot;scores&quot;, groupId = &quot;tv&quot;)
+  public void consume(String message) {
+    logger.info(&quot;{}. This is outstanding to watch on TV. Score now {} - 0!&quot;, message, ++score);
+  }
+
+}
+</code></pre>
+<h4 id="62-second-consumer-radio">6.2. Second Consumer: Radio</h4>
+<p>Similar to the TvConsumer, RadioConsumer listens to players&rsquo; topic with its groupId and logs its special message.</p>
+<pre><code>@Service
+public class RadioConsumer {
+
+  private final Logger logger = LoggerFactory.getLogger(RadioConsumer.class);
+  private Integer score = 0;
+
+  @KafkaListener(topics = &quot;scores&quot;, groupId = &quot;radio&quot;)
+  public void consume(String message) {
+    logger.info(&quot;{}. Score is now {}-0 for the people who just turned on their Radios!&quot;, message,
+        ++score);
+  }
+
+}
+</code></pre>
+<h3 id="7-send-a-message-to-topic">7. Send a Message To Topic</h3>
+<p>Now let&rsquo;s try to send a message to the topic using basic curl:</p>
+<pre><code>curl -X POST localhost:9000/games/score?name=&quot;Ronaldo&quot;
+</code></pre>
+<p>And let&rsquo;s see the results in our console:</p>
+<pre><code>c.c.t.s.producer.Scores: Publishing message to scores topic
+c.c.t.s.consumer.RadioConsumer: Ronaldo is scored a new goal!. Score is now 1-0 for the people who 
+c.c.t.s.consumer.TvConsumer: Ronaldo is scored a new goal!. This is outstanding to watch on TV. Score now 1 - 0!
+</code></pre>
+<h3 id="8-summary">8. Summary</h3>
+<p>In this post, we created kafka topic, send messages via a producer and retrieve them via multiple consumers from same
+topic using Spring Boot Kafka libraries.</p>
+<p>You can find source code of this project in 
+<a href="https://github.com/cmlonder/spring-boot-kafka-tutorial" target="_blank" rel="noopener">Github</a></p>
+
+    </div>
+
+    
+
+
+
+
+
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tag/kafka/">kafka</a>
+  
+  <a class="badge badge-light" href="/tag/spring-boot/">spring boot</a>
+  
+</div>
+
+
+
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://twitter.com/intent/tweet?url=http://cemalonder.com/post/spring-boot-kafka-tutorial/&amp;text=Spring%20Boot%20Kafka%20Tutorial" target="_blank" rel="noopener" class="share-btn-twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.facebook.com/sharer.php?u=http://cemalonder.com/post/spring-boot-kafka-tutorial/&amp;t=Spring%20Boot%20Kafka%20Tutorial" target="_blank" rel="noopener" class="share-btn-facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="mailto:?subject=Spring%20Boot%20Kafka%20Tutorial&amp;body=http://cemalonder.com/post/spring-boot-kafka-tutorial/" target="_blank" rel="noopener" class="share-btn-email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.linkedin.com/shareArticle?url=http://cemalonder.com/post/spring-boot-kafka-tutorial/&amp;title=Spring%20Boot%20Kafka%20Tutorial" target="_blank" rel="noopener" class="share-btn-linkedin">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="whatsapp://send?text=Spring%20Boot%20Kafka%20Tutorial%20http://cemalonder.com/post/spring-boot-kafka-tutorial/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://service.weibo.com/share/share.php?url=http://cemalonder.com/post/spring-boot-kafka-tutorial/&amp;title=Spring%20Boot%20Kafka%20Tutorial" target="_blank" rel="noopener" class="share-btn-weibo">
+          <i class="fab fa-weibo"></i>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+
+
+
+
+
+  
+    
+    
+    
+      
+    
+    
+    
+    <div class="media author-card content-widget-hr">
+      
+        
+        <img class="avatar mr-3 avatar-circle" src="/author/cemal-onder/avatar_huc63091bfd94f6ac856b1fdc8fbb74eee_106618_270x270_fill_lanczos_center_2.png" alt="Cemal Önder">
+      
+
+      <div class="media-body">
+        <h5 class="card-title"><a href="http://cemalonder.com">Cemal Önder</a></h5>
+        <h6 class="card-subtitle">Software Developer</h6>
+        <p class="card-text">Love to learn &amp; share about Computer Science &amp; Software Development</p>
+        <ul class="network-icon" aria-hidden="true">
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://github.com/cmlonder" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://www.linkedin.com/in/cmlonder/" target="_blank" rel="noopener">
+        <i class="fab fa-linkedin"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+    <li>
+      <a href="mailto:cemalonder1@gmail.com" >
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="/files/cv.pdf" >
+        <i class="ai ai-cv"></i>
+      </a>
+    </li>
+  
+</ul>
+
+      </div>
+    </div>
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <div class="article-widget content-widget-hr">
+    <h3>Related</h3>
+    <ul>
+      
+      <li><a href="/post/github-integration-with-local-jenkins/">Github Integration With Local Jenkins</a></li>
+      
+      <li><a href="/post/go-sonar-integration-using-docker-part-1/">Go Sonar Integration Using Docker - Part 1</a></li>
+      
+    </ul>
+  </div>
+  
+
+
+
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/languages/r.min.js"></script>
+        
+      
+
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>const code_highlighting = true;</script>
+    
+
+    
+    
+    <script>const isSiteThemeDark = false;</script>
+    
+
+    
+    
+    
+    
+    
+    
+    <script>
+      const search_config = {"indexURI":"/index.json","minLength":1,"threshold":0.3};
+      const i18n = {"no_results":"No results found","placeholder":"Search...","results":"results found"};
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks",
+        'slides' : "Slides"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.66c553246b0f279a03be6e5597f72b52.js"></script>
+
+    
+
+
+
+
+
+
+  
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+  <p class="powered-by">
+    
+      <a href="/privacy/">Privacy Policy</a>
+    
+    
+       &middot; 
+      <a href="/terms/">Terms</a>
+    
+  </p>
+  
+
+  <p class="powered-by">
+    
+  </p>
+
+  
+  
+
+
+
+
+
+
+  <p class="powered-by">
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" class="back-to-top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

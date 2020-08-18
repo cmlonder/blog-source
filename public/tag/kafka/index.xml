@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>kafka | Cemal Önder</title>
+    <link>http://cemalonder.com/tag/kafka/</link>
+      <atom:link href="http://cemalonder.com/tag/kafka/index.xml" rel="self" type="application/rss+xml" />
+    <description>kafka</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Fri, 17 Jul 2020 01:11:38 +0300</lastBuildDate>
+    <image>
+      <url>http://cemalonder.com/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
+      <title>kafka</title>
+      <link>http://cemalonder.com/tag/kafka/</link>
+    </image>
+    
+    <item>
+      <title>Spring Boot Kafka Tutorial</title>
+      <link>http://cemalonder.com/post/spring-boot-kafka-tutorial/</link>
+      <pubDate>Fri, 17 Jul 2020 01:11:38 +0300</pubDate>
+      <guid>http://cemalonder.com/post/spring-boot-kafka-tutorial/</guid>
+      <description>&lt;h3 id=&#34;1-overview&#34;&gt;1. Overview&lt;/h3&gt;
+&lt;p&gt;Apache Kafka is a distributed streaming platform that is used to send data between applications in real-time. It is 
+good to have an overview of some Kafka terminology before going further;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Topic:&lt;/strong&gt; Messages are published to&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Producer:&lt;/strong&gt; An application who can publish its messages to a topic&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Consumer:&lt;/strong&gt; An application that can consume messages from its subscribed topic.
+Most simply, a producer writes messages to topics, and consumers can read messages from its subscribed topics. 
+This allows applications to communicate asynchronously and fulfill high payloads.&lt;/p&gt;
+&lt;p&gt;In this tutorial we are going to create a game announcement system;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Topic:&lt;/strong&gt; Games&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Producer:&lt;/strong&gt; /games/score/?name=${playerName} endpoint where we are going to call with curl request when a 
+A new score is made in our virtual football game.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Consumer:&lt;/strong&gt; There will be 2 consumers. Radio and TV. They will consume our message and use it their business logic. 
+This will show us how we can get the benefit of the publisher/subscriber system.&lt;/p&gt;
+&lt;h3 id=&#34;2-application-setup&#34;&gt;2. Application Setup&lt;/h3&gt;
+&lt;p&gt;We need to prepare our environment by running Apache Kafka and its dependency on ZooKeeper. Kafka provides a simple 
+ZooKeeper server for local purposes, but in production, it should be configured separately. Let&amp;rsquo;s stick with basics in our tutorial:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Download Apache Kafka 
+&lt;a href=&#34;https://kafka.apache.org/quickstart&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Untar it:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;tar -xzf kafka_2.12-2.5.0.tgz
+cd kafka_2.12-2.5.0
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;21-start-zookeeper-server&#34;&gt;2.1. Start ZooKeeper Server&lt;/h4&gt;
+&lt;p&gt;Kafka uses the ZooKeeper server to manage its topics. Start it:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Linux&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;./bin/zookeeper-server-start.sh config/zookeeper.properties
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Windows&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.\bin\windows\zookeeper-server-start.bat .\config\zookeeper.properties
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;22-start-kafka-server&#34;&gt;2.2. Start Kafka Server&lt;/h4&gt;
+&lt;p&gt;Start kafka server after ZooKeeper is up &amp;amp; ready:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Linux&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;./bin/kafka-server-start.sh config/server.properties
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Windows&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.\bin\windows\kafka-server-start.bat .\config\server.properties
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;23-create-a-topic&#34;&gt;2.3. Create a topic&lt;/h4&gt;
+&lt;p&gt;For simplicity, we are going to create a topic before our application is started. Create games topic with the following:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Linux&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.\bin \kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic scores
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Windows&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.\bin\windows\kafka-topics.bat --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic scores
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;24-list-topics&#34;&gt;2.4. List topics&lt;/h4&gt;
+&lt;p&gt;List topics in the Kafka, we will see scores topic is created.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Linux&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.\bin\kafka-topics.bat –list –bootstrap-server localhost:9092
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Windows&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.\bin\windows\kafka-topics.bat --list --bootstrap-server localhost:9092
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;25-create-the-project&#34;&gt;2.5. Create the Project&lt;/h4&gt;
+&lt;p&gt;Now we can start creating our application. We need the following dependencies:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;spring-boot-starter:&lt;/strong&gt; Provides our core Spring libraries.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;spring-boot-starter-web:&lt;/strong&gt; We need it to provide a simple web server and REST operations&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;spring-kafka:&lt;/strong&gt; Wraps Kafka to abstract messaging operations&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;spring-boot-starter-test:&lt;/strong&gt; For core test libraries&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;spring-kafka-test:&lt;/strong&gt; provides testing utils for Kafka&lt;/p&gt;
+&lt;p&gt;Our final pom.xml:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;
+&amp;lt;project xmlns=&amp;quot;http://maven.apache.org/POM/4.0.0&amp;quot; xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot;
+       xsi:schemaLocation=&amp;quot;http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd&amp;quot;&amp;gt;
+   &amp;lt;modelVersion&amp;gt;4.0.0&amp;lt;/modelVersion&amp;gt;
+   &amp;lt;parent&amp;gt;
+      &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+      &amp;lt;artifactId&amp;gt;spring-boot-starter-parent&amp;lt;/artifactId&amp;gt;
+      &amp;lt;version&amp;gt;2.2.6.RELEASE&amp;lt;/version&amp;gt;
+      &amp;lt;relativePath/&amp;gt; &amp;lt;!-- lookup parent from repository --&amp;gt;
+   &amp;lt;/parent&amp;gt;
+   &amp;lt;groupId&amp;gt;com.cemalonder.tutorials&amp;lt;/groupId&amp;gt;
+   &amp;lt;artifactId&amp;gt;spring-boot-kafka-tutorial&amp;lt;/artifactId&amp;gt;
+   &amp;lt;version&amp;gt;0.0.1-SNAPSHOT&amp;lt;/version&amp;gt;
+   &amp;lt;name&amp;gt;spring-boot-kafka-tutorial&amp;lt;/name&amp;gt;
+   &amp;lt;description&amp;gt;Spring Boot kafka integration tutorial&amp;lt;/description&amp;gt;
+
+   &amp;lt;properties&amp;gt;
+      &amp;lt;java.version&amp;gt;1.8&amp;lt;/java.version&amp;gt;
+   &amp;lt;/properties&amp;gt;
+
+   &amp;lt;dependencies&amp;gt;
+      &amp;lt;dependency&amp;gt;
+         &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+         &amp;lt;artifactId&amp;gt;spring-boot-starter&amp;lt;/artifactId&amp;gt;
+      &amp;lt;/dependency&amp;gt;
+
+      &amp;lt;dependency&amp;gt;
+         &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+         &amp;lt;artifactId&amp;gt;spring-boot-starter-web&amp;lt;/artifactId&amp;gt;
+      &amp;lt;/dependency&amp;gt;
+
+      &amp;lt;dependency&amp;gt;
+         &amp;lt;groupId&amp;gt;org.springframework.kafka&amp;lt;/groupId&amp;gt;
+         &amp;lt;artifactId&amp;gt;spring-kafka&amp;lt;/artifactId&amp;gt;
+      &amp;lt;/dependency&amp;gt;
+
+      &amp;lt;dependency&amp;gt;
+         &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+         &amp;lt;artifactId&amp;gt;spring-boot-starter-test&amp;lt;/artifactId&amp;gt;
+         &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
+         &amp;lt;exclusions&amp;gt;
+            &amp;lt;exclusion&amp;gt;
+               &amp;lt;groupId&amp;gt;org.junit.vintage&amp;lt;/groupId&amp;gt;
+               &amp;lt;artifactId&amp;gt;junit-vintage-engine&amp;lt;/artifactId&amp;gt;
+            &amp;lt;/exclusion&amp;gt;
+         &amp;lt;/exclusions&amp;gt;
+      &amp;lt;/dependency&amp;gt;
+      &amp;lt;dependency&amp;gt;
+         &amp;lt;groupId&amp;gt;org.springframework.kafka&amp;lt;/groupId&amp;gt;
+         &amp;lt;artifactId&amp;gt;spring-kafka-test&amp;lt;/artifactId&amp;gt;
+         &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
+      &amp;lt;/dependency&amp;gt;
+   &amp;lt;/dependencies&amp;gt;
+
+   &amp;lt;build&amp;gt;
+      &amp;lt;plugins&amp;gt;
+         &amp;lt;plugin&amp;gt;
+            &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;spring-boot-maven-plugin&amp;lt;/artifactId&amp;gt;
+         &amp;lt;/plugin&amp;gt;
+      &amp;lt;/plugins&amp;gt;
+   &amp;lt;/build&amp;gt;
+
+&amp;lt;/project&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Or you can also use Spring Initializr to generate above pom.xml quickly with the following selections:
+&lt;img src=&#34;spring-initialzr.png&#34; alt=&#34;spring initalizr&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;3-application-configuration&#34;&gt;3. Application Configuration&lt;/h3&gt;
+&lt;p&gt;We need to configure our application.yml/properties with the following:&lt;/p&gt;
+&lt;p&gt;By default, our Kafka server started on port 9092 when we run in our terminal. We will use the default port and 
+Serializer/Deserializer provided by Kafka. We configure our application to run on port 9000 and as the last step we 
+give a group-id as a default group-id but we will change it per Consumer in the following steps.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;server:
+  port: 9000
+
+spring:
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: group-id
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;4-create-a-controller&#34;&gt;4. Create a Controller&lt;/h3&gt;
+&lt;p&gt;We provide /games/score endpoint with the name request param. This controller then delegates its job to Scores class with incoming name.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;@RestController
+@RequestMapping(value = &amp;quot;/games&amp;quot;)
+public class GameController {
+
+  private final Scores scores;
+
+  @Autowired
+  public GameController(Scores scores) {
+    this.scores = scores;
+  }
+
+  @PostMapping(value = &amp;quot;/score&amp;quot;)
+  public void makeAnnouncement(@RequestParam(&amp;quot;name&amp;quot;) String name) {
+    this.scores.sendMessage(name);
+  }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;5-create-a-producer&#34;&gt;5. Create a Producer&lt;/h3&gt;
+&lt;p&gt;Create producer package and Scores file inside it as following:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;@Service
+public class Scores {
+
+  private final Logger logger = LoggerFactory.getLogger(Scores.class);
+  private static final String TOPIC = &amp;quot;scores&amp;quot;;
+
+  private final KafkaTemplate&amp;lt;String, String&amp;gt; kafkaTemplate;
+
+  @Autowired
+  public Scores(KafkaTemplate&amp;lt;String, String&amp;gt; kafkaTemplate) {
+    this.kafkaTemplate = kafkaTemplate;
+  }
+
+  public void sendMessage(String name) {
+    logger.info(&amp;quot;Publishing message to {} topic&amp;quot;, TOPIC);
+    this.kafkaTemplate.send(TOPIC, name + &amp;quot; is scored a new goal!&amp;quot;);
+  }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This class is annotated with Service annotation and it&amp;rsquo;s now inside Spring Context. We are using KafkaTemplate to 
+easily send messages to the given topic, since our class is already in Spring Context we can use Autowired annotation 
+in our constructor and inject KafkaTemplate to our class.  Then we are calling KafkaTemplate’s send method with the 
+score topic we already created and message for the topic.&lt;/p&gt;
+&lt;h3 id=&#34;6-create-consumers&#34;&gt;6. Create Consumers&lt;/h3&gt;
+&lt;p&gt;We will create two Consumers for the score topic. First, create consumers package and TvConsumer class in it as follows:&lt;/p&gt;
+&lt;h4 id=&#34;61-first-consumer-tv&#34;&gt;6.1. First Consumer: TV&lt;/h4&gt;
+&lt;p&gt;This class is annotated with Service annotation and its now inside Spring Context similar to the provider above. 
+We are using KafkaListener annotation provided by spring-kafka to listen given topic. It is listening to players&amp;rsquo; 
+topics with its unique groupId which is the tv in this case. By giving different groupId’s, multiple consumers can listen to the same topic. 
+In the end, the TvConsumer class logs a simple message that shows it is handled by the TV.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;@Service
+public class TvConsumer {
+
+  private final Logger logger = LoggerFactory.getLogger(TvConsumer.class);
+  private Integer score = 0;
+
+  @KafkaListener(topics = &amp;quot;scores&amp;quot;, groupId = &amp;quot;tv&amp;quot;)
+  public void consume(String message) {
+    logger.info(&amp;quot;{}. This is outstanding to watch on TV. Score now {} - 0!&amp;quot;, message, ++score);
+  }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;62-second-consumer-radio&#34;&gt;6.2. Second Consumer: Radio&lt;/h4&gt;
+&lt;p&gt;Similar to the TvConsumer, RadioConsumer listens to players&amp;rsquo; topic with its groupId and logs its special message.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;@Service
+public class RadioConsumer {
+
+  private final Logger logger = LoggerFactory.getLogger(RadioConsumer.class);
+  private Integer score = 0;
+
+  @KafkaListener(topics = &amp;quot;scores&amp;quot;, groupId = &amp;quot;radio&amp;quot;)
+  public void consume(String message) {
+    logger.info(&amp;quot;{}. Score is now {}-0 for the people who just turned on their Radios!&amp;quot;, message,
+        ++score);
+  }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;7-send-a-message-to-topic&#34;&gt;7. Send a Message To Topic&lt;/h3&gt;
+&lt;p&gt;Now let&amp;rsquo;s try to send a message to the topic using basic curl:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;curl -X POST localhost:9000/games/score?name=&amp;quot;Ronaldo&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And let&amp;rsquo;s see the results in our console:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;c.c.t.s.producer.Scores: Publishing message to scores topic
+c.c.t.s.consumer.RadioConsumer: Ronaldo is scored a new goal!. Score is now 1-0 for the people who 
+c.c.t.s.consumer.TvConsumer: Ronaldo is scored a new goal!. This is outstanding to watch on TV. Score now 1 - 0!
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;8-summary&#34;&gt;8. Summary&lt;/h3&gt;
+&lt;p&gt;In this post, we created kafka topic, send messages via a producer and retrieve them via multiple consumers from same
+topic using Spring Boot Kafka libraries.&lt;/p&gt;
+&lt;p&gt;You can find source code of this project in 
+&lt;a href=&#34;https://github.com/cmlonder/spring-boot-kafka-tutorial&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Github&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

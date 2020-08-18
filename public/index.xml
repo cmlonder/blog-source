@@ -1,0 +1,1713 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cemal Önder</title>
+    <link>http://cemalonder.com/</link>
+      <atom:link href="http://cemalonder.com/index.xml" rel="self" type="application/rss+xml" />
+    <description>Cemal Önder</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Thu, 28 Jun 2018 00:00:00 +0100</lastBuildDate>
+    <image>
+      <url>http://cemalonder.com/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
+      <title>Cemal Önder</title>
+      <link>http://cemalonder.com/</link>
+    </image>
+    
+    <item>
+      <title>Example Talk</title>
+      <link>http://cemalonder.com/talk/example/</link>
+      <pubDate>Sat, 01 Jun 2030 13:00:00 +0000</pubDate>
+      <guid>http://cemalonder.com/talk/example/</guid>
+      <description>&lt;div class=&#34;alert alert-note&#34;&gt;
+  &lt;div&gt;
+    Click on the &lt;strong&gt;Slides&lt;/strong&gt; button above to view the built-in slides feature.
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Slides can be added in a few ways:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Create&lt;/strong&gt; slides using Academic&amp;rsquo;s 
+&lt;a href=&#34;https://sourcethemes.com/academic/docs/managing-content/#create-slides&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;em&gt;Slides&lt;/em&gt;&lt;/a&gt; feature and link using &lt;code&gt;slides&lt;/code&gt; parameter in the front matter of the talk file&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Upload&lt;/strong&gt; an existing slide deck to &lt;code&gt;static/&lt;/code&gt; and link using &lt;code&gt;url_slides&lt;/code&gt; parameter in the front matter of the talk file&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Embed&lt;/strong&gt; your slides (e.g. Google Slides) or presentation video on this page using 
+&lt;a href=&#34;https://sourcethemes.com/academic/docs/writing-markdown-latex/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;shortcodes&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Further talk details can easily be added to this page using &lt;em&gt;Markdown&lt;/em&gt; and $\rm \LaTeX$ math code.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Spring Boot Kafka Tutorial</title>
+      <link>http://cemalonder.com/post/spring-boot-kafka-tutorial/</link>
+      <pubDate>Fri, 17 Jul 2020 01:11:38 +0300</pubDate>
+      <guid>http://cemalonder.com/post/spring-boot-kafka-tutorial/</guid>
+      <description>&lt;h3 id=&#34;1-overview&#34;&gt;1. Overview&lt;/h3&gt;
+&lt;p&gt;Apache Kafka is a distributed streaming platform that is used to send data between applications in real-time. It is 
+good to have an overview of some Kafka terminology before going further;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Topic:&lt;/strong&gt; Messages are published to&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Producer:&lt;/strong&gt; An application who can publish its messages to a topic&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Consumer:&lt;/strong&gt; An application that can consume messages from its subscribed topic.
+Most simply, a producer writes messages to topics, and consumers can read messages from its subscribed topics. 
+This allows applications to communicate asynchronously and fulfill high payloads.&lt;/p&gt;
+&lt;p&gt;In this tutorial we are going to create a game announcement system;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Topic:&lt;/strong&gt; Games&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Producer:&lt;/strong&gt; /games/score/?name=${playerName} endpoint where we are going to call with curl request when a 
+A new score is made in our virtual football game.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Consumer:&lt;/strong&gt; There will be 2 consumers. Radio and TV. They will consume our message and use it their business logic. 
+This will show us how we can get the benefit of the publisher/subscriber system.&lt;/p&gt;
+&lt;h3 id=&#34;2-application-setup&#34;&gt;2. Application Setup&lt;/h3&gt;
+&lt;p&gt;We need to prepare our environment by running Apache Kafka and its dependency on ZooKeeper. Kafka provides a simple 
+ZooKeeper server for local purposes, but in production, it should be configured separately. Let&amp;rsquo;s stick with basics in our tutorial:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Download Apache Kafka 
+&lt;a href=&#34;https://kafka.apache.org/quickstart&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Untar it:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;tar -xzf kafka_2.12-2.5.0.tgz
+cd kafka_2.12-2.5.0
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;21-start-zookeeper-server&#34;&gt;2.1. Start ZooKeeper Server&lt;/h4&gt;
+&lt;p&gt;Kafka uses the ZooKeeper server to manage its topics. Start it:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Linux&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;./bin/zookeeper-server-start.sh config/zookeeper.properties
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Windows&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.\bin\windows\zookeeper-server-start.bat .\config\zookeeper.properties
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;22-start-kafka-server&#34;&gt;2.2. Start Kafka Server&lt;/h4&gt;
+&lt;p&gt;Start kafka server after ZooKeeper is up &amp;amp; ready:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Linux&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;./bin/kafka-server-start.sh config/server.properties
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Windows&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.\bin\windows\kafka-server-start.bat .\config\server.properties
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;23-create-a-topic&#34;&gt;2.3. Create a topic&lt;/h4&gt;
+&lt;p&gt;For simplicity, we are going to create a topic before our application is started. Create games topic with the following:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Linux&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.\bin \kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic scores
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Windows&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.\bin\windows\kafka-topics.bat --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic scores
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;24-list-topics&#34;&gt;2.4. List topics&lt;/h4&gt;
+&lt;p&gt;List topics in the Kafka, we will see scores topic is created.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Linux&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.\bin\kafka-topics.bat –list –bootstrap-server localhost:9092
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Windows&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.\bin\windows\kafka-topics.bat --list --bootstrap-server localhost:9092
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;25-create-the-project&#34;&gt;2.5. Create the Project&lt;/h4&gt;
+&lt;p&gt;Now we can start creating our application. We need the following dependencies:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;spring-boot-starter:&lt;/strong&gt; Provides our core Spring libraries.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;spring-boot-starter-web:&lt;/strong&gt; We need it to provide a simple web server and REST operations&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;spring-kafka:&lt;/strong&gt; Wraps Kafka to abstract messaging operations&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;spring-boot-starter-test:&lt;/strong&gt; For core test libraries&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;spring-kafka-test:&lt;/strong&gt; provides testing utils for Kafka&lt;/p&gt;
+&lt;p&gt;Our final pom.xml:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;
+&amp;lt;project xmlns=&amp;quot;http://maven.apache.org/POM/4.0.0&amp;quot; xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot;
+       xsi:schemaLocation=&amp;quot;http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd&amp;quot;&amp;gt;
+   &amp;lt;modelVersion&amp;gt;4.0.0&amp;lt;/modelVersion&amp;gt;
+   &amp;lt;parent&amp;gt;
+      &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+      &amp;lt;artifactId&amp;gt;spring-boot-starter-parent&amp;lt;/artifactId&amp;gt;
+      &amp;lt;version&amp;gt;2.2.6.RELEASE&amp;lt;/version&amp;gt;
+      &amp;lt;relativePath/&amp;gt; &amp;lt;!-- lookup parent from repository --&amp;gt;
+   &amp;lt;/parent&amp;gt;
+   &amp;lt;groupId&amp;gt;com.cemalonder.tutorials&amp;lt;/groupId&amp;gt;
+   &amp;lt;artifactId&amp;gt;spring-boot-kafka-tutorial&amp;lt;/artifactId&amp;gt;
+   &amp;lt;version&amp;gt;0.0.1-SNAPSHOT&amp;lt;/version&amp;gt;
+   &amp;lt;name&amp;gt;spring-boot-kafka-tutorial&amp;lt;/name&amp;gt;
+   &amp;lt;description&amp;gt;Spring Boot kafka integration tutorial&amp;lt;/description&amp;gt;
+
+   &amp;lt;properties&amp;gt;
+      &amp;lt;java.version&amp;gt;1.8&amp;lt;/java.version&amp;gt;
+   &amp;lt;/properties&amp;gt;
+
+   &amp;lt;dependencies&amp;gt;
+      &amp;lt;dependency&amp;gt;
+         &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+         &amp;lt;artifactId&amp;gt;spring-boot-starter&amp;lt;/artifactId&amp;gt;
+      &amp;lt;/dependency&amp;gt;
+
+      &amp;lt;dependency&amp;gt;
+         &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+         &amp;lt;artifactId&amp;gt;spring-boot-starter-web&amp;lt;/artifactId&amp;gt;
+      &amp;lt;/dependency&amp;gt;
+
+      &amp;lt;dependency&amp;gt;
+         &amp;lt;groupId&amp;gt;org.springframework.kafka&amp;lt;/groupId&amp;gt;
+         &amp;lt;artifactId&amp;gt;spring-kafka&amp;lt;/artifactId&amp;gt;
+      &amp;lt;/dependency&amp;gt;
+
+      &amp;lt;dependency&amp;gt;
+         &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+         &amp;lt;artifactId&amp;gt;spring-boot-starter-test&amp;lt;/artifactId&amp;gt;
+         &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
+         &amp;lt;exclusions&amp;gt;
+            &amp;lt;exclusion&amp;gt;
+               &amp;lt;groupId&amp;gt;org.junit.vintage&amp;lt;/groupId&amp;gt;
+               &amp;lt;artifactId&amp;gt;junit-vintage-engine&amp;lt;/artifactId&amp;gt;
+            &amp;lt;/exclusion&amp;gt;
+         &amp;lt;/exclusions&amp;gt;
+      &amp;lt;/dependency&amp;gt;
+      &amp;lt;dependency&amp;gt;
+         &amp;lt;groupId&amp;gt;org.springframework.kafka&amp;lt;/groupId&amp;gt;
+         &amp;lt;artifactId&amp;gt;spring-kafka-test&amp;lt;/artifactId&amp;gt;
+         &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
+      &amp;lt;/dependency&amp;gt;
+   &amp;lt;/dependencies&amp;gt;
+
+   &amp;lt;build&amp;gt;
+      &amp;lt;plugins&amp;gt;
+         &amp;lt;plugin&amp;gt;
+            &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;spring-boot-maven-plugin&amp;lt;/artifactId&amp;gt;
+         &amp;lt;/plugin&amp;gt;
+      &amp;lt;/plugins&amp;gt;
+   &amp;lt;/build&amp;gt;
+
+&amp;lt;/project&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Or you can also use Spring Initializr to generate above pom.xml quickly with the following selections:
+&lt;img src=&#34;spring-initialzr.png&#34; alt=&#34;spring initalizr&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;3-application-configuration&#34;&gt;3. Application Configuration&lt;/h3&gt;
+&lt;p&gt;We need to configure our application.yml/properties with the following:&lt;/p&gt;
+&lt;p&gt;By default, our Kafka server started on port 9092 when we run in our terminal. We will use the default port and 
+Serializer/Deserializer provided by Kafka. We configure our application to run on port 9000 and as the last step we 
+give a group-id as a default group-id but we will change it per Consumer in the following steps.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;server:
+  port: 9000
+
+spring:
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: group-id
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;4-create-a-controller&#34;&gt;4. Create a Controller&lt;/h3&gt;
+&lt;p&gt;We provide /games/score endpoint with the name request param. This controller then delegates its job to Scores class with incoming name.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;@RestController
+@RequestMapping(value = &amp;quot;/games&amp;quot;)
+public class GameController {
+
+  private final Scores scores;
+
+  @Autowired
+  public GameController(Scores scores) {
+    this.scores = scores;
+  }
+
+  @PostMapping(value = &amp;quot;/score&amp;quot;)
+  public void makeAnnouncement(@RequestParam(&amp;quot;name&amp;quot;) String name) {
+    this.scores.sendMessage(name);
+  }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;5-create-a-producer&#34;&gt;5. Create a Producer&lt;/h3&gt;
+&lt;p&gt;Create producer package and Scores file inside it as following:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;@Service
+public class Scores {
+
+  private final Logger logger = LoggerFactory.getLogger(Scores.class);
+  private static final String TOPIC = &amp;quot;scores&amp;quot;;
+
+  private final KafkaTemplate&amp;lt;String, String&amp;gt; kafkaTemplate;
+
+  @Autowired
+  public Scores(KafkaTemplate&amp;lt;String, String&amp;gt; kafkaTemplate) {
+    this.kafkaTemplate = kafkaTemplate;
+  }
+
+  public void sendMessage(String name) {
+    logger.info(&amp;quot;Publishing message to {} topic&amp;quot;, TOPIC);
+    this.kafkaTemplate.send(TOPIC, name + &amp;quot; is scored a new goal!&amp;quot;);
+  }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This class is annotated with Service annotation and it&amp;rsquo;s now inside Spring Context. We are using KafkaTemplate to 
+easily send messages to the given topic, since our class is already in Spring Context we can use Autowired annotation 
+in our constructor and inject KafkaTemplate to our class.  Then we are calling KafkaTemplate’s send method with the 
+score topic we already created and message for the topic.&lt;/p&gt;
+&lt;h3 id=&#34;6-create-consumers&#34;&gt;6. Create Consumers&lt;/h3&gt;
+&lt;p&gt;We will create two Consumers for the score topic. First, create consumers package and TvConsumer class in it as follows:&lt;/p&gt;
+&lt;h4 id=&#34;61-first-consumer-tv&#34;&gt;6.1. First Consumer: TV&lt;/h4&gt;
+&lt;p&gt;This class is annotated with Service annotation and its now inside Spring Context similar to the provider above. 
+We are using KafkaListener annotation provided by spring-kafka to listen given topic. It is listening to players&amp;rsquo; 
+topics with its unique groupId which is the tv in this case. By giving different groupId’s, multiple consumers can listen to the same topic. 
+In the end, the TvConsumer class logs a simple message that shows it is handled by the TV.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;@Service
+public class TvConsumer {
+
+  private final Logger logger = LoggerFactory.getLogger(TvConsumer.class);
+  private Integer score = 0;
+
+  @KafkaListener(topics = &amp;quot;scores&amp;quot;, groupId = &amp;quot;tv&amp;quot;)
+  public void consume(String message) {
+    logger.info(&amp;quot;{}. This is outstanding to watch on TV. Score now {} - 0!&amp;quot;, message, ++score);
+  }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;62-second-consumer-radio&#34;&gt;6.2. Second Consumer: Radio&lt;/h4&gt;
+&lt;p&gt;Similar to the TvConsumer, RadioConsumer listens to players&amp;rsquo; topic with its groupId and logs its special message.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;@Service
+public class RadioConsumer {
+
+  private final Logger logger = LoggerFactory.getLogger(RadioConsumer.class);
+  private Integer score = 0;
+
+  @KafkaListener(topics = &amp;quot;scores&amp;quot;, groupId = &amp;quot;radio&amp;quot;)
+  public void consume(String message) {
+    logger.info(&amp;quot;{}. Score is now {}-0 for the people who just turned on their Radios!&amp;quot;, message,
+        ++score);
+  }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;7-send-a-message-to-topic&#34;&gt;7. Send a Message To Topic&lt;/h3&gt;
+&lt;p&gt;Now let&amp;rsquo;s try to send a message to the topic using basic curl:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;curl -X POST localhost:9000/games/score?name=&amp;quot;Ronaldo&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And let&amp;rsquo;s see the results in our console:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;c.c.t.s.producer.Scores: Publishing message to scores topic
+c.c.t.s.consumer.RadioConsumer: Ronaldo is scored a new goal!. Score is now 1-0 for the people who 
+c.c.t.s.consumer.TvConsumer: Ronaldo is scored a new goal!. This is outstanding to watch on TV. Score now 1 - 0!
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;8-summary&#34;&gt;8. Summary&lt;/h3&gt;
+&lt;p&gt;In this post, we created kafka topic, send messages via a producer and retrieve them via multiple consumers from same
+topic using Spring Boot Kafka libraries.&lt;/p&gt;
+&lt;p&gt;You can find source code of this project in 
+&lt;a href=&#34;https://github.com/cmlonder/spring-boot-kafka-tutorial&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Github&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Github Integration With Local Jenkins</title>
+      <link>http://cemalonder.com/post/github-integration-with-local-jenkins/</link>
+      <pubDate>Thu, 16 Jul 2020 00:56:17 +0300</pubDate>
+      <guid>http://cemalonder.com/post/github-integration-with-local-jenkins/</guid>
+      <description>&lt;h3 id=&#34;1-overview&#34;&gt;1. Overview&lt;/h3&gt;
+&lt;p&gt;Sometimes it is very beneficial to have your own Jenkins:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;You have a ready Jenkins in your company but you are just learning Jenkins and you are pushing every little change
+to the repository which makes them dirty&lt;/li&gt;
+&lt;li&gt;You don&amp;rsquo;t have a ready Jenkins and want to give it a try&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Jenkins works with repositories which makes it a great tool for CI &amp;amp; CD. Communication between Jenkins and the repository
+manager is bi-directional, where the repository manager (Github in our case) pushes changes to Jenkins and Jenkins also fetches
+the repo from Github. So if you want to give it a try, Github must be able to access it. But it is not possible while you
+are using Jenkins locally since &lt;strong&gt;Github can not access your localhost:8080&lt;/strong&gt;. So you should install a Jenkins to a server
+you own where this is not always possible.&lt;/p&gt;
+&lt;p&gt;In this article, we are going to set up everything from scratch with a basic &amp;amp; quick way and &lt;strong&gt;we will integrate Github with
+locally running Jenkins.&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&#34;2-install-jenkins-with-docker&#34;&gt;2. Install Jenkins with Docker&lt;/h3&gt;
+&lt;p&gt;Docker is the easiest way to start using Jenkins. Here are the steps for downloading the docker image, starting a new container
+and setting up Jenkins:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.&lt;/strong&gt; Start local Jenkins by running following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -p 8080:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This creates a Jenkins on port 8080 with a volume &lt;strong&gt;jenkins_home&lt;/strong&gt; managed by docker. It is not suggested by Jenkins 
+to map the volume to the host, so we will keep the volume in this way.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2.&lt;/strong&gt; There is an initial administrator password in our terminal when we run above command:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;jenkins_startup.png&#34; alt=&#34;jenkins startup&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Copy this password then go to localhost:8080. Enter password here and continue:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;initial_admin.png&#34; alt=&#34;initial admin&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3.&lt;/strong&gt; Select install suggested plugins and wait for the installation process finish. This will install plugins like Git, SVN, etc.
+where we are going to use it in the next steps.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;install_plugins.png&#34; alt=&#34;install plugins&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4.&lt;/strong&gt; Optionally let&amp;rsquo;s also create an admin user to later use instead of initial admin.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;create_admin.png&#34; alt=&#34;create admin&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;5.&lt;/strong&gt; Finish the installation by applying the default URL since we will keep using localhost.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;installation_finish.png&#34; alt=&#34;finish installation&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;3-create-a-project-in-github&#34;&gt;3. Create a Project in Github&lt;/h3&gt;
+&lt;p&gt;You may already have a project, for the tutorial purpose let&amp;rsquo;s also create a new fresh project &lt;strong&gt;Github-integration-with-local-jenkins&lt;/strong&gt;
+which is located 
+&lt;a href=&#34;https://github.com/cmlonder/github-integration-with-local-jenkins&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;And let&amp;rsquo;s add a simple Jenkinsfile to the root of the project which simply echos Hello World&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;pipeline {
+    agent any
+
+    stages {
+        stage(&#39;Hello&#39;) {
+            steps {
+                echo &#39;Hello World&#39;
+            }
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;4-create-an-access-token-in-github&#34;&gt;4. Create an Access Token in Github&lt;/h3&gt;
+&lt;p&gt;Jenkins will try to reach Github for a bunch of operations where it will need some access token. Let&amp;rsquo;s create this token:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.&lt;/strong&gt; Click on your profile icon then select &lt;strong&gt;Settings&lt;/strong&gt; from the dropdown then select &lt;strong&gt;Developer Settings&lt;/strong&gt; from the
+left navigation panel&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;developer_settings.png&#34; alt=&#34;developer settings&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2.&lt;/strong&gt; Select &lt;strong&gt;Personal access tokens&lt;/strong&gt; and click on &lt;strong&gt;Generate new token&lt;/strong&gt;
+&lt;img src=&#34;create_access_token.png&#34; alt=&#34;create access token&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3.&lt;/strong&gt; Now we should select the scopes of our token. &lt;strong&gt;repo&lt;/strong&gt; and &lt;strong&gt;admin:repo_hook&lt;/strong&gt; scopes are enough for our operations.
+Select them, give them a note, and generate the token.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;local_jenkins_token.png&#34; alt=&#34;local_jenkins_token&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4.&lt;/strong&gt; Don&amp;rsquo;t forget to &lt;strong&gt;TAKE NOT&lt;/strong&gt; of this generated token since you will not able to see it again.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;access_token.png&#34; alt=&#34;access token&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Now we are ready to create a job in Jenkins. We will use this token while configuring Github in the Jenkins.&lt;/p&gt;
+&lt;h3 id=&#34;5-configure-github-server-in-jenkins&#34;&gt;5. Configure Github Server in Jenkins&lt;/h3&gt;
+&lt;p&gt;Before creating a new job, let&amp;rsquo;s add the token we generated in Github to our Jenkins.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.&lt;/strong&gt; Go to Jenkins Home and click on &lt;strong&gt;Manage Jenkins&lt;/strong&gt; then select &lt;strong&gt;Configure System&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;manage_jenkins.png&#34; alt=&#34;manage jenkins&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2.&lt;/strong&gt; Scroll down to the Github section. Click on &lt;strong&gt;Add Github Server&lt;/strong&gt; then give it a name like &lt;strong&gt;github api&lt;/strong&gt;. Check 
+&lt;strong&gt;Manage hooks&lt;/strong&gt;. We need to enter our credentials for Github. We will use the token we generated in the previous step.
+Click on &lt;strong&gt;Add&lt;/strong&gt; and select &lt;strong&gt;Jenkins&lt;/strong&gt;
+&lt;img src=&#34;add_github_server.png&#34; alt=&#34;add github server&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3.&lt;/strong&gt; Now you see a popup to add a credential. Select &lt;strong&gt;Global credentials&lt;/strong&gt; and &lt;strong&gt;Secret text&lt;/strong&gt;.
+Enter your generated access token which you created in the previous step from Github. Finally, enter a description (
+&lt;strong&gt;github access token&lt;/strong&gt; in this case) and add it.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;add_token.png&#34; alt=&#34;add token to jenkins&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4.&lt;/strong&gt; As the last step, select the credential you created (github access token) in the popup and click on &lt;strong&gt;Test connection&lt;/strong&gt;.
+A response should appear on the screen which shows remaining API limits for your user. See 
+
+&lt;a href=&#34;https://developer.github.com/apps/building-github-apps/understanding-rate-limits-for-github-apps/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt; for Github
+API rate limit information, but it is enough for learning purposes.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;save_github_server.png&#34; alt=&#34;save Github server&#34;&gt;&lt;/p&gt;
+&lt;p&gt;We successfully added a credential to access Github APIs. Let&amp;rsquo;s continue with creating a new job.&lt;/p&gt;
+&lt;h3 id=&#34;6-create-a-new-job&#34;&gt;6. Create a New Job&lt;/h3&gt;
+&lt;p&gt;We need to create a job in Jenkins by setting up our project URL and giving Github access so that Jenkins can fetch our
+project to build it within our pipeline. Let&amp;rsquo;s set it up step by step&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.&lt;/strong&gt; Click on create a new item
+&lt;img src=&#34;new_item.png&#34; alt=&#34;new item&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2.&lt;/strong&gt; Select &lt;strong&gt;Pipeline&lt;/strong&gt; and give it a name
+
+&lt;a href=&#34;https://github.com/cmlonder/go-dockerized-coverage&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;new_pipeline.png&#34; alt=&#34;new job&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3.&lt;/strong&gt; Now we should configure our job. Click (or scroll) to &lt;strong&gt;Build Triggers&lt;/strong&gt; section and check &lt;strong&gt;Github hook trigger for GITScm polling&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;configure_webhook.png&#34; alt=&#34;configure webhook&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4.&lt;/strong&gt; Click on &lt;strong&gt;Pipeline&lt;/strong&gt; and select &lt;strong&gt;Pipeline script from SCM&lt;/strong&gt; from Definition dropdown. This configures Jenkins 
+job that we will use instructions from our project&amp;rsquo;s  Jenkinsfile to run the pipeline. Enter your
+&lt;em&gt;&amp;hellip;git&lt;/em&gt; repository URL.&lt;/p&gt;
+&lt;h3 id=&#34;7-expose-your-localhost-with-ngrok&#34;&gt;7. Expose Your Localhost with NGROK&lt;/h3&gt;
+&lt;p&gt;As mentioned at the beginning of the article, we need a way to Github to communicate with our local running Jenkins. There is a way
+for it; exposing your local with a tunnel to the web. &lt;strong&gt;NGROK&lt;/strong&gt; is the easiest way for this which makes it available with
+a simple command. But it &lt;strong&gt;SHOULD NOT&lt;/strong&gt; be used for production purposes.&lt;/p&gt;
+&lt;p&gt;First download ngrok for your operating system 
+&lt;a href=&#34;https://ngrok.com/download&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Then type the following command in your terminal (if you did not add ngrok to PATH, cd into your ngrok download directory);&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ngrok http 8080
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This exposes your &lt;strong&gt;8080&lt;/strong&gt; which is the port Jenkins is running on to the web via ngrok. After you type it, you should see
+the exposed URL like following in your terminal:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;ngrok.png&#34; alt=&#34;ngrok&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Copy the Http forwarding URL and paste it to your browser, you will be redirected to your local Jenkins server. We are ready
+to go to the next step, configuring Github for webhooks with Jenkins.&lt;/p&gt;
+&lt;h3 id=&#34;8-configure-webhook-url-for-your-project-in-github&#34;&gt;8. Configure Webhook URL for your Project in Github&lt;/h3&gt;
+&lt;p&gt;Go to your project page and click on &lt;strong&gt;Settings&lt;/strong&gt; tab. Then click &lt;strong&gt;Webhooks&lt;/strong&gt; from the left navigation panel and
+click on &lt;strong&gt;Add webhook&lt;/strong&gt;. Now you should see the following screen:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;add_webhook.png&#34; alt=&#34;add webhook&#34;&gt;&lt;/p&gt;
+&lt;p&gt;For the Payload URL you should add your ngrok URL from previous step + &lt;strong&gt;/github-webhook/&lt;/strong&gt; which 
+will be ${YOUR_NGROK_URL}&lt;strong&gt;/github-webhook/&lt;/strong&gt;. So my ngrok URL is: &lt;a href=&#34;http://d9cdfa47e311.ngrok.io&#34;&gt;http://d9cdfa47e311.ngrok.io&lt;/a&gt; then my
+Payload URL is &lt;strong&gt;&lt;a href=&#34;http://d9cdfa47e311.ngrok.io/github-webhook/&#34;&gt;http://d9cdfa47e311.ngrok.io/github-webhook/&lt;/a&gt;&lt;/strong&gt; Trailing Slash &lt;strong&gt;/&lt;/strong&gt; at the end is imported which may cause
+redirection problem if you don&amp;rsquo;t add. (Also you can&amp;rsquo;t trigger this URL in the browser since /github-webhook provided by Jenkins
+for &lt;strong&gt;POST&lt;/strong&gt; requests)&lt;/p&gt;
+&lt;p&gt;Select &lt;strong&gt;application/json&lt;/strong&gt; as content type and pick &lt;strong&gt;Just the push event&lt;/strong&gt;. This configures when to call Jenkins if you want
+to configure detailed hooks, select &lt;strong&gt;Let me select individual events&lt;/strong&gt; and then you can pick the events like Pull Requests, Pushes,
+Releases etc. to trigger calling your Jenkins endpoint.&lt;/p&gt;
+&lt;p&gt;Finally, add the webhook.&lt;/p&gt;
+&lt;h3 id=&#34;9-push-changes-to-github-to-trigger-local-jenkins-pipeline&#34;&gt;9. Push changes to Github to Trigger Local Jenkins Pipeline&lt;/h3&gt;
+&lt;p&gt;Before triggering the job via push to Github, I had to trigger it once manually otherwise pipeline is not triggered. I could not
+find a description for it but I guess plugin checks the local difference of the repository with the changes it 
+received but it needs an initial pull of the repo to the local. So first build it manually once:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;build_initially.png&#34; alt=&#34;build manually&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Now let&amp;rsquo;s add a small change to the repo and push it. I changed my echo message from &lt;strong&gt;Hello World&lt;/strong&gt; to &lt;strong&gt;Hello World from localhost&lt;/strong&gt; and
+pushed it to my repo.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;push_changes.png&#34; alt=&#34;git changes&#34;&gt;&lt;/p&gt;
+&lt;p&gt;And 2nd build is automatically triggered!&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;build_triggered.png&#34; alt=&#34;build triggered&#34;&gt;&lt;/p&gt;
+&lt;p&gt;And if you click on the build details (#2 in the above screen) and then click &lt;strong&gt;Console Output&lt;/strong&gt; you can see the build
+details. Here are the important parts of log in my console;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;it shows that pipeline is started by a &lt;strong&gt;push&lt;/strong&gt; to the repository&lt;/li&gt;
+&lt;li&gt;with the commit message &lt;strong&gt;hello from localhost&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;and runs the Jenkinsfile in the repository by showing &lt;strong&gt;Hello World from localhost&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;Started by GitHub push by cmlonder
+
+.... SOME MORE MESSAGE REGARDING GITHUB CHANGES ....
+
+Commit message: &amp;quot;hello from localhost&amp;quot;
+
+.... SOME MORE MESSAGE REGARDING GITHUB CHANGES ....
+
+Hello World from localhost
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;10-summary&#34;&gt;10. Summary&lt;/h3&gt;
+&lt;p&gt;In this post, we made the integration of local Jenkins using Docker containers to the Github. Also, we saw how to create 
+a job, add a Github credential, configure your pipeline with Jenkinsfile, add a webhook from your repository to your Jenkins.&lt;/p&gt;
+&lt;p&gt;You can find source code of this project in 
+&lt;a href=&#34;https://github.com/cmlonder/github-integration-with-local-jenkins&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Github&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;11-resources&#34;&gt;11. Resources&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;&#34;&gt;https://www.jenkins.io/doc/book/pipeline/jenkinsfile/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Go Sonar Integration Using Docker - Part 1</title>
+      <link>http://cemalonder.com/post/go-sonar-integration-using-docker-part-1/</link>
+      <pubDate>Sun, 12 Jul 2020 01:28:56 +0300</pubDate>
+      <guid>http://cemalonder.com/post/go-sonar-integration-using-docker-part-1/</guid>
+      <description>&lt;h3 id=&#34;overview&#34;&gt;Overview&lt;/h3&gt;
+&lt;p&gt;In this series, we are going to integrate a Go project with Sonar using Docker.
+
+&lt;a href=&#34;http://cemalonder.com/post/go-sonar-integration-using-docker-part-1&#34;&gt;Part 1&lt;/a&gt; will be about creating a go application, writing unit tests, 
+and generating code coverage then sending this report to SonarQube.
+
+&lt;a href=&#34;&#34;&gt;Part 2 - TBD&lt;/a&gt; will be about using Sonar to fail pipeline based on the Quality report.&lt;/p&gt;
+&lt;h3 id=&#34;1-create-a-simple-todo-app&#34;&gt;1. Create a Simple Todo App&lt;/h3&gt;
+&lt;p&gt;Let&amp;rsquo;s first create an empty project and initialize go modules.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mkdir go-dockerized-coverage
+cd go-dockerized-coverage
+go mod init cemalonder.com/go/todo
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Create a todo folder and todo.go file&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mkdir todo
+touch todo.go
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And write a simple Todo App with 2 functions; &lt;strong&gt;Add&lt;/strong&gt; and &lt;strong&gt;Complete&lt;/strong&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;// Package todo provides a simple todo application
+package todo
+
+import &amp;quot;errors&amp;quot;
+
+// Todo representation of todo with id, title and completed status
+type Todo struct {
+   Id       int
+   Title    string
+   Completed bool
+}
+
+// TodoApp holds todo list and id counter
+type TodoApp struct {
+   todos map[int]Todo
+   id int
+}
+
+// CreateTodoApp creates a new TodoApp by initializing todo list and id counter
+func CreateTodoApp() TodoApp {
+   todoApp := TodoApp{}
+   todoApp.todos = make(map[int]Todo)
+   todoApp.id = 0
+   return todoApp
+}
+
+// Add adds a new todo with given title and returns created todo with a new id
+func (app *TodoApp) Add(title string) Todo {
+   app.id = app.id + 1
+   app.todos[app.id] = Todo{app.id, title, false}
+   return app.todos[app.id]
+}
+
+// Complete completes a todo with given id and
+// returns todo not found exception if todo with given id is not found
+func (app *TodoApp) Complete(id int) error {
+   if todo, ok := app.todos[id]; ok {
+      todo.Completed = true
+      app.todos[id] = todo
+      return nil
+   } else {
+      return errors.New(&amp;quot;todo not found&amp;quot;)
+   }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;2-write-unit-tests&#34;&gt;2. Write Unit Tests&lt;/h3&gt;
+&lt;p&gt;Now let&amp;rsquo;s create some unit tests for our Todo App. My Complete function contains some business logic which I can write
+unit tests. I will consider business cases first, then implement them;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;When I complete a todo which exists, I expect it&amp;rsquo;s completed state is true&lt;/li&gt;
+&lt;li&gt;When I complete a todo which does not exist, I expect an error&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;package todo_test
+
+import (
+   &amp;quot;testing&amp;quot;
+)
+
+func TestCompleteForFoundTodo(t *testing.T) {
+   app := CreateTodoApp()
+   todo := app.Add(&amp;quot;Wake up early&amp;quot;)
+   if todo.Completed {
+      t.Error(&amp;quot;Expected completed is false, but it is true&amp;quot;)
+   }
+
+   err := app.Complete(todo.Id)
+
+   if err != nil {
+      t.Errorf(&amp;quot;Expected error is nil, but it is %v&amp;quot;, err)
+   }
+
+   if todo.Completed {
+      t.Error(&amp;quot;Expected completed is true, but it is false&amp;quot;)
+   }
+}
+
+func TestCompleteForNotFoundTodo(t *testing.T) {
+   app := CreateTodoApp()
+   err := app.Complete(1)
+   if err == nil {
+      t.Errorf(&amp;quot;Expected error is not nil, but it is %v&amp;quot;, err)
+   }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I&amp;rsquo;m following some testing conventions above which starts with TestXxx(*testing.T). And also my package
+name is todo_test. Since this post is about integrating Go with Sonar I will let keep them for another post, let&amp;rsquo;s
+continue with generating code coverage.&lt;/p&gt;
+&lt;h3 id=&#34;3-generate-code-coverage&#34;&gt;3. Generate Code Coverage&lt;/h3&gt;
+&lt;p&gt;Let&amp;rsquo;s run and generate coverage for our project:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;go test ./... -v -coverprofile=coverage.out -covermode=count -coverpkg=./...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And if summarize what is above command and its flag is doing:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;go test ./&amp;hellip;&lt;/strong&gt; = running all the tests in current and all sub-folders&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;-v&lt;/strong&gt; = print full output&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;-coverprofile=coverage.out&lt;/strong&gt; = write coverage to the given file, here we write to coverage.out&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;-covermode=count&lt;/strong&gt; = Sets the mode for coverage analyses, here we set to count which shows how many times statements are run&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;-coverpkg=./&amp;hellip;&lt;/strong&gt; = apply coverage for all matching pattern, here we applied current and all sub-folders&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For the detailed list of all flags for go test command, see 
+&lt;a href=&#34;https://golang.org/pkg/cmd/go/internal/test/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Now we have a coverage.out generated in the root of the project content like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; mode: count
+  cemalonder.com/go/todo/main.go:3.14,4.2 0 0
+  cemalonder.com/go/todo/todo/todo.go:20.30,25.2 4 2
+  cemalonder.com/go/todo/todo/todo.go:28.44,32.2 3 1
+  cemalonder.com/go/todo/todo/todo.go:36.44,37.35 1 2
+  cemalonder.com/go/todo/todo/todo.go:37.35,41.3 3 1
+  cemalonder.com/go/todo/todo/todo.go:41.8,43.3 1 1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The next step is sending this coverage to Sonar so we can visualize it.&lt;/p&gt;
+&lt;h3 id=&#34;4-start-local-sonarqube&#34;&gt;4. Start Local SonarQube&lt;/h3&gt;
+&lt;p&gt;Even you will send your reports to a Sonar instance which you have in your company&amp;rsquo;s server, let&amp;rsquo;s try everything first
+locally. It will be pretty easy using Docker.&lt;/p&gt;
+&lt;p&gt;Start a new SonarQube container:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --rm -p 9000:9000 sonarqube
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If we summarize above command;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Installs &lt;strong&gt;sonarqube&lt;/strong&gt; image if it does not exist locally&lt;/li&gt;
+&lt;li&gt;Creates a container from this image&lt;/li&gt;
+&lt;li&gt;Starts this container&lt;/li&gt;
+&lt;li&gt;Forwards internal 9000 port of docker to host (localhost in this case) so you can access it via [localhost:9000]&lt;/li&gt;
+&lt;li&gt;Removes container (&amp;ndash;rm) when it is stopped so you don&amp;rsquo;t run out of space (you still have the image)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Now we have a locally running sonarqube with no persistency (in-memory), so you will lose your pushed reports when you
+restart your container but it is okay for our case since we want to test our reports.&lt;/p&gt;
+&lt;p&gt;If you visit 
+&lt;a href=&#34;&#34;&gt;localhost:9000&lt;/a&gt; in your browser you will see local SonarQube instance with 0 projects.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;sonarqube.png&#34; alt=&#34;sonarqube&#34;&gt;&lt;/p&gt;
+&lt;p&gt;We need to push our project to SonarQube. Let&amp;rsquo;s continue with the next step.&lt;/p&gt;
+&lt;h3 id=&#34;5-configure-sonar-in-project&#34;&gt;5. Configure Sonar in Project&lt;/h3&gt;
+&lt;p&gt;We need some configuration in our project before we push it to the SonarQube. In the next step, we will be using SonarScanner
+which requires sonar-project.properties configured in the project. By default, it should be located at the root of the project.
+Let&amp;rsquo;s create &lt;strong&gt;sonar-project.properties&lt;/strong&gt; in the root of the project and&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;touch sonar-project.properties
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And its content is:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sonar.language=go
+# This should be unique in SonarQube
+sonar.projectKey=simple-todo-app
+sonar.projectName=Simple Todo Application
+sonar.go.coverage.reportPaths=coverage.out
+sonar.exclusions=**/*_test.go
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And if we summarize the properties used above:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;sonar.language&lt;/strong&gt; = we are setting our language but SonarQube also capable of guessing it&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;sonar.projectKey&lt;/strong&gt; = this should be unique in your SonarQube instance&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;sonar.projectName&lt;/strong&gt; = this will be shown in the UI as a name of our project&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;sonar.go.coverage.reportPaths&lt;/strong&gt; = we show our &lt;strong&gt;coverage.out&lt;/strong&gt; which we generated in 
+&lt;a href=&#34;#2-write-unit-tests&#34;&gt;write unit tests&lt;/a&gt; step&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;sonar.exclusions&lt;/strong&gt; = we are excluding _test.go files since we don&amp;rsquo;t want to get coverage of tests itself
+All of the properties can be found 
+&lt;a href=&#34;https://docs.sonarqube.org/latest/analysis/analysis-parameters/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We have configured our project. The last step is pushing these to the SonarQube instance.&lt;/p&gt;
+&lt;h3 id=&#34;6-send-coverage-report-to-sonarqube-using-sonarscanner&#34;&gt;6. Send Coverage Report to SonarQube using SonarScanner&lt;/h3&gt;
+&lt;p&gt;
+&lt;a href=&#34;https://github.com/SonarSource/sonar-scanner-cli&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;SonarScanner&lt;/a&gt; is a tool used to run code analysis on SonarQube instance.
+To use this we should install it locally and run against our project which has code coverage generated and sonar-project.properties
+configured. But instead of installing locally, I would like to do this step also with Docker since SonarQube officially provides a 
+&lt;a href=&#34;https://hub.docker.com/r/sonarsource/sonar-scanner-cli&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;docker image&lt;/a&gt; for this.&lt;/p&gt;
+&lt;p&gt;Before running the sonar-scanner-cli docker command you should get your local IP since we will need it in the next step.
+For this type &lt;code&gt;ipconfig&lt;/code&gt; if you are working in Windows or &lt;code&gt;ifconfig&lt;/code&gt; if you are in a Linux based Operating System. Then
+take note of your &lt;strong&gt;IPv4 Adress&lt;/strong&gt; for the valid Adapter, in my case I&amp;rsquo;m working via Wireless so I take note of my 
+&lt;strong&gt;Wireless Lan adapter Wi-Fi&lt;/strong&gt; which is 192.168.0.11 as follows&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;ip-address.png&#34; alt=&#34;ip address&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Now run following command in the shell (run it in PowerShell if you are in windows otherwise ${PWD} does not work)&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; docker run --rm -e SONAR_HOST_URL=http://192.168.0.11:9000 -v ${PWD}:/usr/src sonarsource/sonar-scanner-cli
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And if we summarize above command:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Installs &lt;strong&gt;sonarsource/sonar-scanner-cli&lt;/strong&gt; image if it does not exist locally&lt;/li&gt;
+&lt;li&gt;Creates a container from this image&lt;/li&gt;
+&lt;li&gt;Starts this container&lt;/li&gt;
+&lt;li&gt;Sets &lt;strong&gt;SONAR_HOST_URL&lt;/strong&gt; environment variable to show where SonarQube runs&lt;/li&gt;
+&lt;li&gt;Creates a volume from &lt;strong&gt;/usr/src&lt;/strong&gt; to your local (${PWD} or give your absolute path like /c/yourUser/yourProject) so
+sonar-scanner-cli can use your local project and its properties (sonar-project.properties)&lt;/li&gt;
+&lt;li&gt;Removes container (&amp;ndash;rm) when it is stopped so you don&amp;rsquo;t run out of space (you still have the image)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In your terminal you should see an &lt;strong&gt;EXECUTION SUCCESS&lt;/strong&gt; message with a log similar to this:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;...More logs...
+INFO: Analysis report generated in 134ms, dir size=80 KB
+INFO: Analysis report compressed in 681ms, zip size=12 KB
+INFO: Analysis report uploaded in 260ms
+INFO: ANALYSIS SUCCESSFUL, you can browse http://192.168.0.11:9000/dashboard?id=simple-todo-app
+INFO: Note that you will be able to access the updated dashboard once the server has processed the submitted analysis report
+INFO: More about the report processing at http://192.168.0.11:9000/api/ce/task?id=AXNFIP_bMJij3EBEF7zK
+INFO: Analysis total time: 5.375 s
+INFO: ------------------------------------------------------------------------
+INFO: EXECUTION SUCCESS
+INFO: ------------------------------------------------------------------------
+INFO: Total time: 12.923s
+INFO: Final Memory: 13M/47M
+INFO: ------------------------------------------------------------------------
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;NOTE:&lt;/strong&gt; You can not use 
+&lt;a href=&#34;&#34;&gt;http://localhost:9000&lt;/a&gt; instead of 
+&lt;a href=&#34;&#34;&gt;http://192.168.0.11:9000&lt;/a&gt; since sonar-scanner-cli Docker container runs
+on its host and &lt;strong&gt;localhost&lt;/strong&gt; for that container is not same address with localhost of yours (at least in Windows, Mac&amp;rsquo;s 
+docker daemon may be editing etc/hosts files so users in Mac MAY be using localhost even they are working in Docker)&lt;/p&gt;
+&lt;p&gt;Now if you visit 
+&lt;a href=&#34;&#34;&gt;http://localhost:9000&lt;/a&gt; again, you will see there is 1 project now. Click on that and here is our report:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;sonar-analyse.png&#34; alt=&#34;sonar analyse&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Since Sonar has default Quality Gates configured, I&amp;rsquo;m now passing all of the scores and we have &lt;strong&gt;Passed&lt;/strong&gt; status.&lt;/p&gt;
+&lt;h3 id=&#34;summary&#34;&gt;Summary&lt;/h3&gt;
+&lt;p&gt;In this post, we write a simple Go project, generate coverage report, configure SonarScanner, and analyze our project in Sonar.
+The 
+&lt;a href=&#34;&#34;&gt;next part - TBD&lt;/a&gt; will be about integrating this project to Jenkins and reject our pipeline based on the project quality report.&lt;/p&gt;
+&lt;p&gt;You can find source code of this project in 
+&lt;a href=&#34;https://github.com/cmlonder/go-dockerized-coverage&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Github&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;resources&#34;&gt;Resources&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;&#34;&gt;https://docs.sonarqube.org/latest&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;&#34;&gt;https://blog.golang.org/cover&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Welcome Back Clean Code</title>
+      <link>http://cemalonder.com/post/welcome-back-clean-code/welcome-back-clean-code/</link>
+      <pubDate>Mon, 13 Jan 2020 07:14:38 +0300</pubDate>
+      <guid>http://cemalonder.com/post/welcome-back-clean-code/welcome-back-clean-code/</guid>
+      <description>&lt;p&gt;I recently read an 
+&lt;a href=&#34;https://overreacted.io/goodbye-clean-code/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;article&lt;/a&gt; from Dan Abramov who is the creator of Redux.
+Even if I agree his article point:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Don’t be a clean code zealot. Clean code is not a goal. It’s an attempt to make some sense out of the immense complexity of systems we’re dealing with.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;I don&amp;rsquo;t agree how misleading his article title and how not descriptive his example. Because this kind of titles &amp;ldquo;Goodbye Clean Code&amp;rdquo;
+gives power to another kind of zealots who hates some Software Principles or hates someone around him mentioning this kind of
+principles. When you title your article like this, it is too easy being used as a power in social medias to be offensive against
+software principles just by mentioning your article without any arguments to use with your own. Also think about how many people exist who
+never know Clean Coding principles but using your article just as a weapon against it instead of his own experiences.
+Rather I like the people who has deep knowledge of Clean Coding and Refactoring and can give some advice where to use them
+properly and giving me awareness of it (which is probably aim of this article but I find it misleading and insufficient)&lt;/p&gt;
+&lt;p&gt;Just for an idea, you can google &amp;ldquo;OOP sucks&amp;rdquo; or ironically &amp;ldquo;Goodbye Redux&amp;rdquo; to see
+how zealots use this kind of titles where I both like OOP and Redux.&lt;/p&gt;
+&lt;p&gt;Dan mentions 2 points to give you the awareness beside his title, lets have a look at them:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Firstly, I didn’t talk to the person who wrote it. I rewrote the code and checked it in without their input. Even if it was an improvement (which I don’t believe anymore), this is a terrible way to go about it&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;I think this is the right way you should do when you are truly doing refactoring. You don&amp;rsquo;t have to talk the person directly
+if you are doing refactoring, you should be in trust with unit tests. And if the code has a little indicators of clean coding
+than you should have general idea why the code is structured like that or your team must have some documentations for exceptions.
+What if the person who writes the line leaves the job? You still contact them personally? No, we don&amp;rsquo;t. We make unit &amp;amp; integration tests,
+properly structure our code with internally documenting (in our code) and finally we may have externally documentation for exceptional cases.&lt;/p&gt;
+&lt;p&gt;And Dan&amp;rsquo;s second mention:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;For example, we later needed many special cases and behaviors for different handles on different shapes&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;When I first read these lines, I say myself &amp;ldquo;finally I will see the point and understand what happened in above code, and
+satisfied with his argument in title&amp;rdquo;. It did not happen. He gave me lots of lines above which than I was expecting to see some evidence or
+some real results. But instead I read something like &amp;ldquo;special cases&amp;rdquo; which does not give me the idea.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;What special cases did he need?&lt;/li&gt;
+&lt;li&gt;What should we learn when we refactored like above?&lt;/li&gt;
+&lt;li&gt;Which points we should be more careful?&lt;/li&gt;
+&lt;li&gt;How did your &amp;ldquo;refactorings&amp;rdquo; are merged, any Pull Request? Who is the reviewer, where is the discussion, did your boss call only you?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;As I said before, I know his point. But title, arguments he show and how article is being mentioned in twitter, reddit and
+lots of other social medias is dangerous. If you trust that who uses this article has deep knowledge in software principles,
+software architectures etc. than we don&amp;rsquo;t have any discussions here. When I start searching if there are some people thinking like me
+than I see this 
+&lt;a href=&#34;https://www.reddit.com/r/programming/comments/eng355/goodbye_clean_code/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;discussion&lt;/a&gt; on reddit and it
+pleased me that they exist.&lt;/p&gt;
+&lt;p&gt;If Dan wants to say &amp;ldquo;Great power comes with great responsibility&amp;rdquo;, I agree. But it is already mentioned by Stan Lee and can
+be applied in any area of our live with example real life scenarios. If we know all this kind of principles, we should be careful when &amp;amp; where to apply them.
+But to get this experience we should first read &amp;amp; get deep knowledge of them, make some mistake and learn from our mistakes.
+Otherwise it is too easy for people never read refactoring, clean coding, YAGNI, DRY etc. and only mentioning around this
+kind of articles as an excuse of not knowing this principles.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>5 Layer and 5 Tier Architecture</title>
+      <link>http://cemalonder.com/post/5-layer-and-5-tier-architecture/</link>
+      <pubDate>Fri, 13 Sep 2019 08:37:57 +0300</pubDate>
+      <guid>http://cemalonder.com/post/5-layer-and-5-tier-architecture/</guid>
+      <description>&lt;p&gt;There are differences between N-layer and N-tier definitions. We can start with explaining those first:&lt;/p&gt;
+&lt;h2 id=&#34;5-layer-architecture&#34;&gt;5-layer Architecture&lt;/h2&gt;
+&lt;p&gt;Layering is logical separation that you implement in your application. It has a relation with N-Tier but we will
+move onto it later:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./5-layer.png&#34; alt=&#34;5-layer&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;presentation&#34;&gt;Presentation&lt;/h3&gt;
+&lt;p&gt;This is how your application is shown to the user. You can think about it is a look and feel of the application.
+But it is very similar to the UI layer, today&amp;rsquo;s world with the improvement of JavaScript (client-side-rendering solutions like React, Angular, etc.) this separation may not be seem exact
+but still makes sense, let me continue:&lt;/p&gt;
+&lt;h3 id=&#34;ui&#34;&gt;UI&lt;/h3&gt;
+&lt;p&gt;This is where user interactions are interpreted. What happens when user clicks submit button, how the data is sent to
+the server and retrieved? If you think about server-side rendering which we used older times, we were all interpreting
+those and returning user fully ready HTML page but today with client-side-rendering all of those works are done in the
+user&amp;rsquo;s browser with the help of JavaScript. So you can think about now Presentation + UI is done in users server
+(phone, pc etc.) if client-side-rendering is used. If the user&amp;rsquo;s server is only responsible for showing the data,
+now the Presentation layer takes place there while UI layer takes place in our server.&lt;/p&gt;
+&lt;h3 id=&#34;business-logic&#34;&gt;Business Logic&lt;/h3&gt;
+&lt;p&gt;This is the place where we are responsible for data validation (even if you did it in client-side,
+we should do in server-side too because we never trust to clients), manipulation, security, processing,
+database lookups, etc. takes place. Those responsibilities can be shared between UI side and Data Access depending
+on the action&amp;rsquo;s security scope&lt;/p&gt;
+&lt;h3 id=&#34;data-access&#34;&gt;Data Access&lt;/h3&gt;
+&lt;p&gt;This is where you abstract to insert, delete, etc. actions that you need to do on the DataBase (Data Storage level).
+It kinda interfaces between DataBases and your application&lt;/p&gt;
+&lt;h3 id=&#34;data-storage&#34;&gt;Data Storage&lt;/h3&gt;
+&lt;p&gt;This is were database servers belong. This is the implementation of the
+Data Access layer which psychically inserts, deletes, etc. data on the server.&lt;/p&gt;
+&lt;h2 id=&#34;5-tier-architecture&#34;&gt;5-Tier Architecture&lt;/h2&gt;
+&lt;p&gt;Now depending on your application&amp;rsquo;s needs, you should define your trade-offs:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;What do you want to achieve?&lt;/li&gt;
+&lt;li&gt;How much do you want to scale?&lt;/li&gt;
+&lt;li&gt;What is your acceptable latency?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If you achieve low latency and you don&amp;rsquo;t aim to be used by too many users, you can start with 1-tier.
+In the below demonstrations keep in mind that the business logic layer can be done in any layers as long as you keep
+security reasons, you can have some general/simple business logic in client-side (Presentation/UI layers) too which may
+increase your servers performance. Also, you can put UI layer in higher/lower tiers depend on using server-side or
+client-side rendering but we talked about general idea above:&lt;/p&gt;
+&lt;h3 id=&#34;1-tier&#34;&gt;1-tier&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;./1-tier.png&#34; alt=&#34;1-tier&#34;&gt;&lt;/p&gt;
+&lt;p&gt;All layers belong to one physical location. Like a game that installed on the user&amp;rsquo;s database and
+doesn&amp;rsquo;t request any other external system, it has own database on the user&amp;rsquo;s server and all logics implemented there.&lt;/p&gt;
+&lt;h3 id=&#34;2-tier&#34;&gt;2-tier&lt;/h3&gt;
+&lt;p&gt;Lets say you want to central database management and all other parts can remain still user&amp;rsquo;s server, like hes is
+playing a game on mobile-phone but data is stored in our servers.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./2-tier.png&#34; alt=&#34;2-tier&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Up to now, you have a performance advantage. If you need to support more users and need more security
+than you need &lt;strong&gt;scalability&lt;/strong&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;3-tier&#34;&gt;3-tier&lt;/h3&gt;
+&lt;p&gt;Beside microservices (maybe another discussion topic), this is one of the most used architecture.
+Presentation and UI is on the user&amp;rsquo;s server (client), business logic and data access belongs to application server,
+and data storage is in another server.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./3-tier.png&#34; alt=&#34;3-tier&#34;&gt;&lt;/p&gt;
+&lt;p&gt;But now your user&amp;rsquo;s request is jumping more tier&amp;rsquo;s which will increase your network latency.
+As talked before it is about trade-offs. Also now you started to have benefit of scaling like:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;./3-tier-scaled.png&#34; alt=&#34;3-tier-scaled&#34;&gt;&lt;/p&gt;
+&lt;p&gt;So depending on your application needs, security levels, latency limits, user counts etc. You can split it up to
+more tiers which is it the reason why its name is N-Tier.&lt;/p&gt;
+&lt;h2 id=&#34;references&#34;&gt;References&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Expert C#2006 Business Objects - Rockford Lhotka&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Software Architecture Patterns - Mark Richards&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>An example preprint / working paper</title>
+      <link>http://cemalonder.com/publication/preprint/</link>
+      <pubDate>Sun, 07 Apr 2019 00:00:00 +0000</pubDate>
+      <guid>http://cemalonder.com/publication/preprint/</guid>
+      <description>&lt;div class=&#34;alert alert-note&#34;&gt;
+  &lt;div&gt;
+    Click the &lt;em&gt;Slides&lt;/em&gt; button above to demo Academic&amp;rsquo;s Markdown slides feature.
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Supplementary notes can be added here, including 
+&lt;a href=&#34;https://sourcethemes.com/academic/docs/writing-markdown-latex/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;code and math&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Slides</title>
+      <link>http://cemalonder.com/slides/example/</link>
+      <pubDate>Tue, 05 Feb 2019 00:00:00 +0000</pubDate>
+      <guid>http://cemalonder.com/slides/example/</guid>
+      <description>&lt;h1 id=&#34;create-slides-in-markdown-with-academic&#34;&gt;Create slides in Markdown with Academic&lt;/h1&gt;
+&lt;p&gt;
+&lt;a href=&#34;https://sourcethemes.com/academic/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Academic&lt;/a&gt; | 
+&lt;a href=&#34;https://sourcethemes.com/academic/docs/managing-content/#create-slides&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Documentation&lt;/a&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;features&#34;&gt;Features&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Efficiently write slides in Markdown&lt;/li&gt;
+&lt;li&gt;3-in-1: Create, Present, and Publish your slides&lt;/li&gt;
+&lt;li&gt;Supports speaker notes&lt;/li&gt;
+&lt;li&gt;Mobile friendly slides&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;controls&#34;&gt;Controls&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Next: &lt;code&gt;Right Arrow&lt;/code&gt; or &lt;code&gt;Space&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Previous: &lt;code&gt;Left Arrow&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Start: &lt;code&gt;Home&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Finish: &lt;code&gt;End&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Overview: &lt;code&gt;Esc&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Speaker notes: &lt;code&gt;S&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Fullscreen: &lt;code&gt;F&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Zoom: &lt;code&gt;Alt + Click&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://github.com/hakimel/reveal.js#pdf-export&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;PDF Export&lt;/a&gt;: &lt;code&gt;E&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;code-highlighting&#34;&gt;Code Highlighting&lt;/h2&gt;
+&lt;p&gt;Inline code: &lt;code&gt;variable&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Code block:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;porridge = &amp;quot;blueberry&amp;quot;
+if porridge == &amp;quot;blueberry&amp;quot;:
+    print(&amp;quot;Eating...&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;math&#34;&gt;Math&lt;/h2&gt;
+&lt;p&gt;In-line math: $x + y = z$&lt;/p&gt;
+&lt;p&gt;Block math:&lt;/p&gt;
+&lt;p&gt;$$
+f\left( x \right) = ;\frac{{2\left( {x + 4} \right)\left( {x - 4} \right)}}{{\left( {x + 4} \right)\left( {x + 1} \right)}}
+$$&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;fragments&#34;&gt;Fragments&lt;/h2&gt;
+&lt;p&gt;Make content appear incrementally&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;{{% fragment %}} One {{% /fragment %}}
+{{% fragment %}} **Two** {{% /fragment %}}
+{{% fragment %}} Three {{% /fragment %}}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Press &lt;code&gt;Space&lt;/code&gt; to play!&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;fragment &#34; &gt;
+One 
+&lt;/span&gt;
+&lt;span class=&#34;fragment &#34; &gt;
+&lt;strong&gt;Two&lt;/strong&gt; 
+&lt;/span&gt;
+&lt;span class=&#34;fragment &#34; &gt;
+Three 
+&lt;/span&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;A fragment can accept two optional parameters:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;class&lt;/code&gt;: use a custom style (requires definition in custom CSS)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;weight&lt;/code&gt;: sets the order in which a fragment appears&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;speaker-notes&#34;&gt;Speaker Notes&lt;/h2&gt;
+&lt;p&gt;Add speaker notes to your presentation&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-markdown&#34;&gt;{{% speaker_note %}}
+- Only the speaker can read these notes
+- Press `S` key to view
+{{% /speaker_note %}}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Press the &lt;code&gt;S&lt;/code&gt; key to view the speaker notes!&lt;/p&gt;
+&lt;aside class=&#34;notes&#34;&gt;
+  &lt;ul&gt;
+&lt;li&gt;Only the speaker can read these notes&lt;/li&gt;
+&lt;li&gt;Press &lt;code&gt;S&lt;/code&gt; key to view&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;/aside&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;themes&#34;&gt;Themes&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;black: Black background, white text, blue links (default)&lt;/li&gt;
+&lt;li&gt;white: White background, black text, blue links&lt;/li&gt;
+&lt;li&gt;league: Gray background, white text, blue links&lt;/li&gt;
+&lt;li&gt;beige: Beige background, dark text, brown links&lt;/li&gt;
+&lt;li&gt;sky: Blue background, thin dark text, blue links&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;ul&gt;
+&lt;li&gt;night: Black background, thick white text, orange links&lt;/li&gt;
+&lt;li&gt;serif: Cappuccino background, gray text, brown links&lt;/li&gt;
+&lt;li&gt;simple: White background, black text, blue links&lt;/li&gt;
+&lt;li&gt;solarized: Cream-colored background, dark green text, blue links&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+
+&lt;section data-noprocess data-shortcode-slide
+  
+      
+      data-background-image=&#34;/img/boards.jpg&#34;
+  &gt;
+
+&lt;h2 id=&#34;custom-slide&#34;&gt;Custom Slide&lt;/h2&gt;
+&lt;p&gt;Customize the slide style and background&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-markdown&#34;&gt;{{&amp;lt; slide background-image=&amp;quot;/img/boards.jpg&amp;quot; &amp;gt;}}
+{{&amp;lt; slide background-color=&amp;quot;#0000FF&amp;quot; &amp;gt;}}
+{{&amp;lt; slide class=&amp;quot;my-style&amp;quot; &amp;gt;}}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;custom-css-example&#34;&gt;Custom CSS Example&lt;/h2&gt;
+&lt;p&gt;Let&amp;rsquo;s make headers navy colored.&lt;/p&gt;
+&lt;p&gt;Create &lt;code&gt;assets/css/reveal_custom.css&lt;/code&gt; with:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-css&#34;&gt;.reveal section h1,
+.reveal section h2,
+.reveal section h3 {
+  color: navy;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr&gt;
+&lt;h1 id=&#34;questions&#34;&gt;Questions?&lt;/h1&gt;
+&lt;p&gt;
+&lt;a href=&#34;https://spectrum.chat/academic&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Ask&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;
+&lt;a href=&#34;https://sourcethemes.com/academic/docs/managing-content/#create-slides&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Documentation&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Privacy Policy</title>
+      <link>http://cemalonder.com/privacy/</link>
+      <pubDate>Thu, 28 Jun 2018 00:00:00 +0100</pubDate>
+      <guid>http://cemalonder.com/privacy/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Last updated July 02, 2020&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Thanks for being part of our community at Cemal Önder. We are committed to protecting your personal information and 
+your privacy. If you have any questions or concerns about this privacy statement or our practices regarding your 
+personal information, Please contact us via  
+&lt;a href=&#34;mailto:cemalonder1@gmail.com&#34;&gt;cemalonder1@gmail.com&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;When you visit our website &lt;a href=&#34;http://cemalonder.com&#34;&gt;http://cemalonder.com&lt;/a&gt; (the &lt;strong&gt;&amp;ldquo;Website&amp;rdquo;&lt;/strong&gt;), more broadly, Use any of our services
+(&lt;strong&gt;&amp;ldquo;Services&amp;rdquo;&lt;/strong&gt; including the Website),  we thank you for trusting us With your personal information. 
+We take your privacy very seriously. In this privacy statement, we try to explain to you what information we 
+collect in the clearest way, How do we use it and what rights do you have for it. We hope you spend some time reading 
+it carefully because it is important. If there are any terms in this privacy statement that you do not agree with, 
+please stop using our services immediately.&lt;/p&gt;
+&lt;p&gt;This privacy statement applies to all information collected through our services 
+(As mentioned above, which includes our website) and any related services, sales, marketing or events.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Please read this privacy statement carefully as it can help you understand how we handle the information collected.&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&#34;1-what-information-do-we-collect&#34;&gt;1. WHAT INFORMATION DO WE COLLECT?&lt;/h2&gt;
+&lt;p&gt;Personal information you disclose to us&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;In Short:&lt;/strong&gt; We collect the information you provide to us.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;When you express your interest in obtaining information, we will collect personal information that you voluntarily provide to us
+Information about you or our products and services when you participate in activities on the website (for example by posting messages)
+Contact us on our online forum or participate in contests, contests or giveaways), or otherwise.
+The personal information we collect depends on your interaction with us and the website,
+The choices you make and the products and features you use. The personal information we collect may include the following:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Personal information you provide.&lt;/strong&gt; We collect names; email addresses; and other similar information.
+All personal information you provide to us must be true, complete and accurate, and you must notify us
+Any changes to such personal information.&lt;/p&gt;
+&lt;h3 id=&#34;information-automatically-collected&#34;&gt;Information automatically collected&lt;/h3&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;In Short:&lt;/strong&gt; Some information-such as your Internet Protocol (IP) address and/or browser and device characteristics
+Automatically collected when you visit our website.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;When you visit, use or browse the website, we automatically collect certain information. This information is not displayed
+Your specific identity (such as your name or contact information), but may include device and usage information,
+For example, your IP address, browser and device characteristics, operating system, language preferences, referral URL,
+Device name, country/region, location, information about who and when to use our website and other technical information.
+This information is necessary to maintain the security and operation of our website and internal website security
+Analysis and reporting purposes.&lt;/p&gt;
+&lt;p&gt;The information we collect includes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;Log and Usage Data&lt;/em&gt;. Logs and usage data are services related to the server, diagnosing usage and performance information
+When you visit or use our website, we will automatically collect and record in the log file. Based on how you interact
+Together with us, this log data may include your IP address, device information, browser type and settings and related
+Your activity on the website (eg date/time stamp related to your use, pages and files viewed, search
+And other operations you perform (such as the functions used), device event information (such as system activity, errors)
+Reports (sometimes called &amp;ldquo;crash dumps&amp;rdquo;) and hardware settings).&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Device Data&lt;/em&gt;. We collect device data, such as information about your computer, phone, tablet or other devices you use
+Visit the website. Depending on the device used, this device data may contain information such as your IP address
+(Or proxy server), device application identification number, location, browser type, hardware model Internet service
+Operating system configuration information of the provider and/or mobile operator.&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Location Data&lt;/em&gt;. We collect information data, such as information about the location of your device, which can be
+Precise or imprecise. How much information we collect depends on the type of settings of the device you use to access the device.
+website. For example, we may use GPS and other technologies to collect geographic data that can tell us your current location
+(Based on your IP address). You can choose to refuse to allow us to collect this information by denying access
+Information or by disabling location settings on the device. Please note that if you opt out, you may not
+Ability to use certain aspects of the service.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;2-how-do-we-use-your-information&#34;&gt;2. HOW DO WE USE YOUR INFORMATION?&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;In Short:&lt;/strong&gt; We will process your information based on legitimate business interests to achieve our purpose
+Sign a contract with you to comply with our legal obligations and/or your consent.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;We use the personal information collected through our website for various business purposes described below.
+We process your personal information for the above purposes for legitimate purposes,
+Enter into a contract with you or with you with your consent and/or to comply with our legal obligations.
+Next to each purpose listed below, we indicate the specific processing basis on which we rely.&lt;/p&gt;
+&lt;p&gt;We use the information we collect or receive:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;For other business purposes.&lt;/strong&gt; We may use your information for other business purposes, such as data analysis,
+Identify usage trends, determine the effectiveness of promotional activities and evaluate and improve our
+Website, product, marketing and your experience. We may use and store this information in an aggregate and anonymous manner
+Form so that it is not associated with a single end user and does not contain personal information. We will not use
+Identifiable personal information without your consent.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;3-will-your-information-be-shared-with-anyone&#34;&gt;3. WILL YOUR INFORMATION BE SHARED WITH ANYONE?&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;In Short:&lt;/strong&gt; We only share information with your consent, comply with the law, and provide you with services,
+Protect your rights or fulfill your business obligations.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;We may process or share your data that we hold based on the following legal basis:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Consent:&lt;/strong&gt; If you have explicitly agreed to us using your personal information for a specific purpose, we may process your data.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Legitimate Interests:&lt;/strong&gt; When it is reasonably necessary to realize our legitimate business interests, we may process your data.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Performance of a Contract:&lt;/strong&gt; Where we sign a contract with you, we may process your personal information
+Fulfill our contract terms.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Legal Obligations:&lt;/strong&gt; We may disclose your information as required by law in order to comply with
+Applicable laws, government requirements, judicial procedures, court orders or legal procedures, such as
+Court orders or subpoenas (including responding to public authorities to meet national security or law enforcement requirements).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Vital Interests:&lt;/strong&gt; If we believe it is necessary to investigate, prevent or prevent, we may disclose your information
+Take action against possible violations of our policies, suspected fraud, and potential threats
+Anyone’s safe and illegal activities, or as evidence of lawsuits we participate in.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;More specifically, we may need to process your data or share your personal information in the following situations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Business Transfers.&lt;/strong&gt; We may share or transfer your information with any related or during any negotiations
+Merger, sell company assets, finance or acquire all or part of our business to another company.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Vendors, Consultants and Other Third-Party Service Providers.&lt;/strong&gt; We may share your data with third-party vendors,
+Service providers, contractors or agents who perform services for us or on our behalf and need access to such services
+Information to do the job. For example: payment processing, data analysis, Email delivery, hosting services,
+Customer service and marketing work. We may allow selected third parties to use tracking technology on our website,
+This will enable them to collect data on our behalf about how you interact with our website. This information
+Among other things, it can be used to analyze and track data to determine popularity Certain content, pages or functions,
+And better understand online activities. Unless otherwise stated in this notice, we will not share, sell, rent or trade any of your
+Promotional information with third parties. We signed a contract with the data processor,
+Designed to help protect your personal information. This means they can’t do anything with you
+Personal information unless we have instructed them to do so. They will not share your personal information with you
+Any organization other than us. They also promise to protect the data held on our behalf and retain it to
+Our guidance period.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;4-who-will-your-information-be-shared-with&#34;&gt;4. WHO WILL YOUR INFORMATION BE SHARED WITH?&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;In Short:&lt;/strong&gt; We only share information with the following third parties.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;We only share and disclose your information with the following third parties. We have classified the parties so that you
+It may be easy to understand the purpose of our data collection and processing practices. If we have processed it based on your data
+After you agree and wish to withdraw your consent, please contact us using the contact information provided in this section
+The title is &amp;ldquo;How do you contact us with this notice?&amp;quot;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Web and Mobile Analytics&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Google Analytics&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;5-do-we-use-cookies-and-other-tracking-technologies&#34;&gt;5. DO WE USE COOKIES AND OTHER TRACKING TECHNOLOGIES?&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;In Short:&lt;/strong&gt; We may use cookies and other tracking technologies to collect and store your information.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;We may use cookies and similar tracking technologies (such as web beacons and pixels) to access or store information.
+It lists specific information about how we use such technologies and how to reject certain cookies.
+In our cookie notice.&lt;/p&gt;
+&lt;h2 id=&#34;6-how-long-do-we-keep-your-information&#34;&gt;6. HOW LONG DO WE KEEP YOUR INFORMATION?&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;In Short:&lt;/strong&gt; We will retain your information when necessary to achieve the purposes outlined in this privacy statement
+Unless otherwise required by law.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;We will only keep your personal information for the necessary time frame specified in this privacy statement,
+Unless the law requires or allows a longer retention period (such as taxation, accounting, or other legal requirements).
+Nothing in this notice requires us to keep your personal information for more than 1 year.&lt;/p&gt;
+&lt;p&gt;When we do not need to conduct any legal business to process your personal information,
+We will delete or anonymize such information, or, if it is not possible (for example, due to your personal
+Information has been stored in the backup file), then we will safely store your personal information and isolate
+From any further processing until it can be deleted.&lt;/p&gt;
+&lt;h2 id=&#34;7-how-do-we-keep-your-information-safe&#34;&gt;7. HOW DO WE KEEP YOUR INFORMATION SAFE?&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;In Short:&lt;/strong&gt; We aim to protect your personal information through organization and technical system
+Security measures.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;We have implemented appropriate technical and organizational security measures to protect the safety of:
+Any personal information we process. However, despite our various protective measures and efforts to protect your information,
+There is no guarantee that electronic transmission via the Internet or information storage technology is 100% secure,
+So we cannot guarantee or guarantee hackers, cybercriminals, or other unauthorized third parties will not be able to
+Undermine our security and incorrectly collect, access, steal or modify your information. Although we will do our best
+It is best to protect your personal information, the transmission of personal information to our website is up to you
+Personal risk. You can only access the website in a secure environment.&lt;/p&gt;
+&lt;h2 id=&#34;8-what-are-your-privacy-rights&#34;&gt;8. WHAT ARE YOUR PRIVACY RIGHTS?&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;In Short:&lt;/strong&gt; In some regions, such as the European Economic Area, you have the right to give you more access
+And control your personal information. You can view, change or terminate your account at any time.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;In certain regions (such as the European Economic Area), you have certain rights under applicable data protection laws.
+This may include (i) the right to request access and obtain a copy of your personal information, (ii) request
+Rectification or erasure; (iii) restrict the processing of your personal information; and (iv) (if applicable),
+Data portability. In some cases, you may also have the right to object to the processing of your personal
+information. To make such a request, please use
+&lt;a href=&#34;#12-how-can-you-contact-us-about-this-notice&#34;&gt;contact details&lt;/a&gt; 
+provided below. We will consider and act upon any request in accordance with applicable data protection laws.&lt;/p&gt;
+&lt;p&gt;If we rely on your consent to process your personal information, you have the right to withdraw your consent at the following times:
+Any time. However, please note that this will not affect the legality of the processing before withdrawal, nor
+It will affect your processing of your personal information for legal processing reasons other than consent.&lt;/p&gt;
+&lt;p&gt;If you live in the European Economic Area and you think we are processing your personal information illegally,
+You also have the right to complain to your local data protection supervisory authority. You can find their contacts
+detail
+&lt;a href=&#34;http://ec.europa.eu/justice/data-protection/bodies/authorities/index_en.htm&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;If you live in Switzerland, you can get the contact information of the data protection agency
+
+&lt;a href=&#34;https://www.edoeb.admin.ch/edoeb/en/home.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Cookies and similar technologies:&lt;/strong&gt; Most web browsers are set to accept cookies by default. If you want, you can usually
+Choose to set your browser to delete cookies and reject cookies. If you choose to delete cookies or refuse cookies,
+This may affect certain features or services of our website. Interest-based advertising that opts out of advertisers
+During our website visit 
+&lt;a href=&#34;http://www.aboutads.info/choices/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;9-controls-for-do-not-track-features&#34;&gt;9. CONTROLS FOR DO-NOT-TRACK FEATURES&lt;/h2&gt;
+&lt;p&gt;Most web browsers and some mobile operating systems and mobile applications include &amp;ldquo;Do Not Track&amp;rdquo; (&amp;ldquo;DNT&amp;rdquo;) functions or
+You can activate this setting to indicate your privacy preferences so that it does not contain data about your online browsing activities
+Monitor and collect. At this stage, there is no unified technical standard for identifying and implementing DNT signals.
+completed. Therefore, we currently do not respond to DNT browser signals or any other automatic
+Tell you not to choose online tracking. If the online tracking standard is adopted, it must be followed
+In the future, we will inform you about this practice in a revised version of this privacy statement.&lt;/p&gt;
+&lt;h2 id=&#34;10-do-california-residents-have-specific-privacy-rights&#34;&gt;10. DO CALIFORNIA RESIDENTS HAVE SPECIFIC PRIVACY RIGHTS?&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;In Short:&lt;/strong&gt; Yes, if you are a resident of California, you will receive specific rights to access the following
+Your personal information.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;California Civil Code Section 1798.83 (also known as the &amp;ldquo;Bright Light&amp;rdquo; Act) allows users in California
+Residents ask us for free and get information about personal categories once a year
+Information we disclose to third parties for direct marketing purposes (if any) and the name and address of all information
+Third parties who shared personal information with us in the previous calendar year. If you are a
+California residents and would like to make such a request, please use
+Contact information provided below.&lt;/p&gt;
+&lt;p&gt;If you are under 18 years of age, live in California and have an account registered on the website, you own
+The right to request removal of harmful data that you post publicly on the website. To request the deletion of such data,
+Please contact us using the contact information provided below and provide the email address associated with your email address
+Account and statement that you live in California. We will ensure that the data will not be displayed publicly
+Website, but please note that data may not be completely or completely deleted from all of our systems
+(For example, backup, etc.).&lt;/p&gt;
+&lt;h2 id=&#34;ccpa-privacy-notice&#34;&gt;CCPA Privacy Notice&lt;/h2&gt;
+&lt;p&gt;California regulations define &amp;ldquo;resident&amp;rdquo; as:&lt;/p&gt;
+&lt;p&gt;*(1) Every individual in California for non-temporary or temporary purposes, and
+*(2) Every individual who lives in California and lives outside California
+Temporary or temporary purpose&lt;/p&gt;
+&lt;p&gt;All other individuals are defined as &amp;ldquo;non-residents&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;If this definition of &amp;ldquo;resident&amp;rdquo; applies to you, certain rights and obligations concerning your personal information also apply.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;What categories of personal information do we collect?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;In the past twelve (12) months, we have collected the following categories of personal information:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Category&lt;/th&gt;
+&lt;th&gt;Examples&lt;/th&gt;
+&lt;th&gt;Collected&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Identifiers&lt;/td&gt;
+&lt;td&gt;Contact details such as real name, alias, postal address, phone or mobile contact number, unique personal identifier, online identifier, Internet protocol address, email address and account name&lt;/td&gt;
+&lt;td&gt;NO&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Personal information categories listed in the California Customer Records statute&lt;/td&gt;
+&lt;td&gt;Name, contact information, education, job, work experience and financial information&lt;/td&gt;
+&lt;td&gt;YES&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Protected classification characteristics under California or federal law&lt;/td&gt;
+&lt;td&gt;Gender and date of birth&lt;/td&gt;
+&lt;td&gt;NO&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Commercial information&lt;/td&gt;
+&lt;td&gt;Transaction information, purchase history, financial details and payment information&lt;/td&gt;
+&lt;td&gt;NO&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Biometric information&lt;/td&gt;
+&lt;td&gt;Fingerprints and voiceprints&lt;/td&gt;
+&lt;td&gt;NO&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Internet or other similar network activity&lt;/td&gt;
+&lt;td&gt;Browsing history, search history, online behavior, interest data, and interactions with us and other websites, applications, systems, and advertisements&lt;/td&gt;
+&lt;td&gt;NO&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Geolocation data&lt;/td&gt;
+&lt;td&gt;Device location&lt;/td&gt;
+&lt;td&gt;NO&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Audio, electronic, visual, thermal, olfactory, or similar information&lt;/td&gt;
+&lt;td&gt;Images and audio, video or phone recordings related to our business activities&lt;/td&gt;
+&lt;td&gt;NO&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Professional or employment-related information&lt;/td&gt;
+&lt;td&gt;Business contact information to provide you with business-level services, job titles, work experience and professional qualifications (if you apply to us for a job)&lt;/td&gt;
+&lt;td&gt;NO&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Education Information&lt;/td&gt;
+&lt;td&gt;Student records and directory information&lt;/td&gt;
+&lt;td&gt;NO&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Inferences drawn from other personal information&lt;/td&gt;
+&lt;td&gt;Inferences from any collected personal information listed above to create a profile or summary of personal preferences and characteristics&lt;/td&gt;
+&lt;td&gt;NO&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;When you interact with us, we may also collect other personal information outside these categories
+Face to face, perform the following activities online or by phone or email:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Get help through our customer support channels&lt;/li&gt;
+&lt;li&gt;Participate in customer surveys or contests; and&lt;/li&gt;
+&lt;li&gt;Promote us to provide services and respond to your inquiries&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;How do we use and share your personal information?&lt;/p&gt;
+&lt;p&gt;Cemal Önder collects and shares your personal information in the following ways:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Targeting Cookies/Marketing Cookies&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;More information about our data collection and sharing practices can be found in this privacy statement.&lt;/p&gt;
+&lt;p&gt;You can opt out of selling your personal information by disabling cookies in cookie preferences
+Or click the &amp;ldquo;Do not sell my personal information&amp;rdquo; link on our homepage.&lt;/p&gt;
+&lt;p&gt;You may contact us by email at 
+&lt;a href=&#34;mailto:cemalonder1@gmail.com&#34;&gt;cemalonder1@gmail.com&lt;/a&gt;, or by referring to the contact 
+details at the bottom of this document.&lt;/p&gt;
+&lt;p&gt;If you use an authorized agent to exercise the right of withdrawal, if the authorized agent rejects our request
+There is no evidence that they have been effectively authorized to act on your behalf.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Will your information be shared with anyone else?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;We may disclose your personal information to our service providers based on a written contract between us and each service provider.
+service providers. Each service provider is a for-profit entity that processes information on our behalf.&lt;/p&gt;
+&lt;p&gt;The latest list of our service providers can be found below.&lt;/p&gt;
+&lt;p&gt;We may use your personal information for our own commercial purposes, such as conducting internal research
+Technology development and demonstration. This is not considered to &amp;ldquo;sell&amp;rdquo; your personal data.&lt;/p&gt;
+&lt;p&gt;Cemal Önder has disclosed the following categories or personal information to third parties for business activities
+The purpose of the first twelve (12) months:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Class B. Personal information as defined by the California Customer Records law, such as your name and contact information
+Information, education, employment, employment history and financial information.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The third party categories to which we disclose personal information for commercial or commercial purposes can be
+
+&lt;a href=&#34;#4-who-will-your-information-be-shared-with&#34;&gt;WHO WILL YOUR INFORMATION BE SHARED WITH?&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Over the past twelve (12) months, Cemal Önder has sold personal information in the following categories to third parties:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Class B. Personal information as defined by the California Customer Records law, such as your name and contact information
+Information, education, employment, employment history and financial information.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The third-party categories to which we sell personal information are:&lt;/p&gt;
+&lt;h2 id=&#34;your-rights-with-respect-to-your-personal-data&#34;&gt;Your rights with respect to your personal data&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Right to request deletion of the data - Request to delete&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;You can request the deletion of your personal information. If you ask us to delete your personal information, we will
+With certain exceptions provided by law, respect your request and delete your personal information, such as
+(But not limited to) another consumer exercising his right to freedom of speech, our compliance requirements
+Caused by legal obligations or any treatment that may be required to prevent illegal activities.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Right to be informed - Request to know&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Depending on the situation, you have the right to know:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Whether we collect and use your personal information;&lt;/li&gt;
+&lt;li&gt;The types of personal information we collect;&lt;/li&gt;
+&lt;li&gt;The purpose of using the collected personal information;&lt;/li&gt;
+&lt;li&gt;Whether we sell your personal information to third parties;&lt;/li&gt;
+&lt;li&gt;The types of personal information we sell or disclose for commercial purposes;&lt;/li&gt;
+&lt;li&gt;The third-party category that sells or discloses personal information for commercial purposes; and&lt;/li&gt;
+&lt;li&gt;Commercial or commercial purpose of collecting or selling personal information.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;According to applicable law, we have no obligation to provide or delete consumer information that has been de-identified
+Respond to consumer requests or re-identify individual data to verify consumer requests.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Right to Non-Discrimination for the Exercise of a Consumer&amp;rsquo;s Privacy Rights&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;We will not discriminate against you if you exercise your privacy rights.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Verification process&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;After receiving your request, we will need to verify your identity to make sure you are the same person as us
+Have information in our system. These verifications require us to provide you with information in order to
+We can match it with the information you previously provided to us. For example, depending on the type of request
+After you submit, we may ask you to provide certain information so that we can compare the information you provide with
+Information we have archived, or we can contact you by communication means (such as phone or email),
+You have provided it to us before. We can also use other verification methods depending on the situation.&lt;/p&gt;
+&lt;p&gt;We will only use the personal information provided in your request to verify your identity or the authority to make the request.
+Where possible, we will avoid requiring you to provide additional information for verification purposes.
+However, if we are unable to verify your identity from the information we have saved, we may ask you
+Provide additional information to verify your identity and to be used for security or fraud prevention.
+We will delete this additional information immediately after verification.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Other privacy rights&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;You may object to the processing of your personal data&lt;/li&gt;
+&lt;li&gt;If your personal data is incorrect or no longer relevant, you can request a correction or request
+Limit data processing&lt;/li&gt;
+&lt;li&gt;You can appoint an authorized agent to make a request according to CCPA on your behalf. We may refuse to
+Authorized agents who have not submitted proof that they have been effectively authorized to act on your behalf
+Cooperation with CCPA.&lt;/li&gt;
+&lt;li&gt;You may be asked to opt out of selling your personal information to third parties in the future. Roger that
+Request for withdrawal, we will execute the request as soon as practicable, but no later than 15 days from that date
+Request to submit.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;To exercise these rights, you can contact us by email [cemalonder1@gmail.com](mailto: &lt;a href=&#34;mailto:cemalonder1@gmail.com&#34;&gt;cemalonder1@gmail.com&lt;/a&gt;), or
+By reference At the bottom of this document. If you have any complaints about how we process your data, we hope to hear from you.&lt;/p&gt;
+&lt;h2 id=&#34;11-do-we-make-updates-to-this-notice&#34;&gt;11. DO WE MAKE UPDATES TO THIS NOTICE?&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;In Short:&lt;/strong&gt; Yes, we will update this notice as necessary to stay compliant with relevant laws.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;We may update this privacy statement from time to time. The updated version will be indicated by the updated **&amp;ldquo;Revision&amp;rdquo; **
+The date and updated version will take effect immediately after access. If we make major changes to this privacy
+Notice, we may notify you by notifying you of such changes significantly or by sending you a notice directly.
+We recommend that you read this privacy statement frequently to understand how we protect your information.&lt;/p&gt;
+&lt;h2 id=&#34;12-how-can-you-contact-us-about-this-notice&#34;&gt;12. HOW CAN YOU CONTACT US ABOUT THIS NOTICE?&lt;/h2&gt;
+&lt;p&gt;If you have questions or comments about this notice, you may email us at 
+&lt;a href=&#34;mailto:cemalonder1@gmail.com&#34;&gt;cemalonder1@gmail.com&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;how-can-you-review-update-or-delete-the-data-we-collect-from-you&#34;&gt;HOW CAN YOU REVIEW, UPDATE, OR DELETE THE DATA WE COLLECT FROM YOU?&lt;/h2&gt;
+&lt;p&gt;Depending on the applicable laws in your country, you may have the right to request access to our personal information
+Collect from you, change this information or delete it in some cases. Request to view, update or delete
+For your personal information, please visit: &lt;a href=&#34;http://cemalonder.com&#34;&gt;http://cemalonder.com&lt;/a&gt;. We will respond to your request within 30 days.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Terms</title>
+      <link>http://cemalonder.com/terms/</link>
+      <pubDate>Thu, 28 Jun 2018 00:00:00 +0100</pubDate>
+      <guid>http://cemalonder.com/terms/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Last Updated 03 July 2020&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&#34;1-agreement-to-terms&#34;&gt;1. Agreement to Terms&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;1.1&lt;/strong&gt; These terms and conditions constitute a legally binding agreement between you or an individual
+On behalf of the entity (&lt;strong&gt;you&lt;/strong&gt;) and &lt;strong&gt;CemalÖnder&lt;/strong&gt; (us, us)** located in **Istanbul**, Turkey, involving your access and use of the following
+** CemalÖnder** 
+&lt;a href=&#34;&#34;&gt;http://cemalonder.com&lt;/a&gt; website and any related applications (** Site **).&lt;/p&gt;
+&lt;p&gt;The site provides the following services: &lt;strong&gt;programming, engineering (service) shared knowledge&lt;/strong&gt;. you agree
+By accessing the website and/or service, you have read, understood and agreed to accept all
+These terms and conditions.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;If you do not agree to all these terms and conditions, you are prohibited from using this website and services
+And you must stop using it immediately.&lt;/strong&gt; We recommend that you print a copy of these terms and conditions for future reference.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.2&lt;/strong&gt; The supplementary policies and any supplementary terms and conditions or documents listed in section 1.7 below
+Content that may be posted on this site from time to time is expressly incorporated by reference.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.3&lt;/strong&gt; We can change these terms and conditions at any time. Updated versions of these terms and conditions
+It will be indicated by the updated &amp;ldquo;Revision&amp;rdquo; date, and the updated version will take effect immediately after it is released.
+You are responsible for reviewing these terms and conditions to stay informed of updates. You continue to use this site
+Indicates that you have accepted such changes.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.4&lt;/strong&gt; We may update or change this website from time to time to reflect changes to our products, user needs and/or ours
+Business priorities.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.5&lt;/strong&gt; Our website is for British residents. The information provided on this website does not apply
+Distribution or use to any individual or entity in any jurisdiction or country
+Violate laws or regulations, or subject us to any registration requirements in that jurisdiction or country.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.6&lt;/strong&gt;This website is suitable for users who are at least 18 years old. If you are under 18, you are not allowed
+Register the website or use the service without parental permission.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.7&lt;/strong&gt; Other policies that apply to your use of this website include:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;&#34;&gt;Our Privacy Statement&lt;/a&gt;, which stipulates our terms for processing any personal data collected from you, or
+What you provide to us. By using this website, you agree to such processing and guarantee that all data you provide is accurate.&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;&#34;&gt;Our Cookie Policy&lt;/a&gt; lists information about cookies on this website.
+*If you purchase software and/or content from the website, it is our terms and conditions of supply
+
+&lt;a href=&#34;&#34;&gt;https://www.google.com/adsense/new/localized-terms?gsessionid=8De9dfTBg0gl_YSrgVVytEUhi1c8R4CT&lt;/a&gt; will apply to sales and licensing.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;2-acceptable-use&#34;&gt;2. Acceptable Use&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;2.1&lt;/strong&gt; Except for the purpose of providing websites and services, you may not access or use this website for other purposes.
+Except for business activities that are specifically approved or approved by us, this website may not be used for any business activities.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2.2&lt;/strong&gt; As a user of this website, you agree not to:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Retrieve data or other content from the website to the compiled database or directory systematically without our written permission&lt;/li&gt;
+&lt;li&gt;Unauthorized use of this website, including collecting usernames and/or user email addresses to send
+Unsolicited email or create user account with wrong excuse&lt;/li&gt;
+&lt;li&gt;Advertising does not belong to our products or services&lt;/li&gt;
+&lt;li&gt;Distorted user experience, skills or information&lt;/li&gt;
+&lt;li&gt;Use this website to advertise or sell goods and services&lt;/li&gt;
+&lt;li&gt;Participate in unauthorized website structure or links&lt;/li&gt;
+&lt;li&gt;Spoof, deceive or mislead us and other users, especially in any attempt to learn sensitive account information (such as user password)&lt;/li&gt;
+&lt;li&gt;Improper use of our support services, or submit false reports of abuse or misconduct&lt;/li&gt;
+&lt;li&gt;Use a purchasing agent or purchasing agent to make purchases on the website&lt;/li&gt;
+&lt;li&gt;Avoid, disable or otherwise interfere with the security-related functions of the website, including preventing
+Or restrict the use or copying of any content or restrict the use&lt;/li&gt;
+&lt;li&gt;Participate in any automated use of the system, such as using scripts to send comments or messages, or using any data mining,
+Robots or similar data collection and extraction tools&lt;/li&gt;
+&lt;li&gt;Interference, damage to the site or improper burden on the site or the network and services connected to the site&lt;/li&gt;
+&lt;li&gt;Try to impersonate another user or individual, or use another user’s username&lt;/li&gt;
+&lt;li&gt;Sell or transfer your personal data&lt;/li&gt;
+&lt;li&gt;Use any information obtained from this website to harass, abuse or harm others&lt;/li&gt;
+&lt;li&gt;Use this website or our content as part of any effort to compete with us or create a revenue-generating business or commercial enterprise&lt;/li&gt;
+&lt;li&gt;Decrypt, decompile, disassemble or reverse engineer any software that constitutes the website, or in any way form part of the website&lt;/li&gt;
+&lt;li&gt;Try to access any part of the website you are restricted to access&lt;/li&gt;
+&lt;li&gt;Harassment, harassment, intimidation or threatening of any of our employees, agents or other users&lt;/li&gt;
+&lt;li&gt;Remove copyright or other claims from any content&lt;/li&gt;
+&lt;li&gt;Copy or adapt the software of this website, including but not limited to Flash, PHP, HTML, JavaScript or other code&lt;/li&gt;
+&lt;li&gt;Upload or spread (or try to upload or spread) viruses, Trojan horses or other interference
+Any party uses and enjoys this website uninterruptedly, or any material serving as passive or active information
+Collection or dissemination mechanism&lt;/li&gt;
+&lt;li&gt;Use, start or participate in any automated use of the system, such as using scripts to send comments or messages, robots,
+Scrapers, offline readers or similar data collection and extraction tools&lt;/li&gt;
+&lt;li&gt;We believe that we and/or this website are damaged, discolored or otherwise damaged&lt;/li&gt;
+&lt;li&gt;Use this website in a manner that is inconsistent with any applicable laws or regulations&lt;/li&gt;
+&lt;li&gt;Services that threaten negative feedback from users or only provide positive feedback to users&lt;/li&gt;
+&lt;li&gt;Falsely implying a relationship with another company that is not related to us or you&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;3-content-you-provide-to-us&#34;&gt;3. Content you provide to us&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;3.1&lt;/strong&gt; You may have the opportunity to post content on the website or send us feedback (&lt;strong&gt;user content&lt;/strong&gt;). You understand that
+And agree that other users on the site can view your user content, and they can see who posted that user content
+User content.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3.2&lt;/strong&gt; &lt;em&gt;You further agree that we can permanently use your user content for any other purpose without payment
+To you, and combine your user content with other content for use within the site. We don&amp;rsquo;t have to attribute to
+Your user content.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3.3&lt;/strong&gt; When posting user content, including comments or contacting other users of the site, you should abide by our
+
+&lt;a href=&#34;&#34;&gt;Acceptable Use Policy&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3.4&lt;/strong&gt;, you guarantee that any user content complies with our acceptable use policy and
+We will compensate us for any violation of the guarantee. This means that you will be responsible for any loss or damage we suffer.
+The consequences of your breach of this warranty.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3.5&lt;/strong&gt; If we believe that you have not placed any user content on the site, we have the right to delete it
+Comply with 
+&lt;a href=&#34;&#34;&gt;Acceptable Use Policy&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3.6&lt;/strong&gt; We are not responsible for any user content, including any content that contains the following content, nor assume any responsibility
+Incorrect information, defamation or loss of user content. We are not obligated to screen, edit or monitor any content
+User content, but we reserve the right to delete, filter and/or edit any user content at any time without notice.
+User content has not been verified or approved by us, and the views expressed by other users on the site do not represent our views or values&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3.7&lt;/strong&gt;If you want to complain about user content uploaded by other users, please contact us via [cemalonder1@gmail.com](mailto: &lt;a href=&#34;mailto:cemalonder1@gmail.com&#34;&gt;cemalonder1@gmail.com&lt;/a&gt;).&lt;/p&gt;
+&lt;h2 id=&#34;4-our-content&#34;&gt;4. Our content&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;4.1&lt;/strong&gt; Unless otherwise stated, this website and services include source code, database, functions, software, website
+The design, audio, video, text, photos and graphics on this website (&lt;strong&gt;our content&lt;/strong&gt;) are owned or licensed by us, and
+Protected by copyright law and trademark law.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4.2&lt;/strong&gt; Unless expressly stated in these terms and conditions, no part of this website, service or our content shall be copied,
+Copy, summarize, repost, upload, publish, publicly display, encode, translate, transmit, distribute,
+It may not be sold, licensed or used for any commercial purpose in any other way without our prior written permission.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4.3&lt;/strong&gt; Provided that you are qualified to use this website, you will get a limited license to access and use this website, and we
+Content, and download or print a copy of any part of the content to which you have full access
+For your personal, non-commercial use.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4.4&lt;/strong&gt; You must not (a) try to access this website or any connected network, server or computer system without authorization
+To the website; and/or (b) for any purpose, including error correction, any modification, adaptation, addition or
+Enhancements to the website or our content, including modifying paper or digital copies that you may have downloaded.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4.5&lt;/strong&gt; We (a) should prepare the website and our content with reasonable skill and caution; and (b) use industry standard viruses
+Detect software to try to prevent uploading content to websites containing viruses.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4.6&lt;/strong&gt; The content on this website is for general reference only. It is not equal to your suggestion
+Should rely on. Before taking or not taking any action, you must get professional or expert advice
+The basis of the website content.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4.7&lt;/strong&gt; Although we have done our best to update the information on our website, we do not make any representations or warranties.
+Or guarantee, whether express or implied, our content on the website is accurate, complete or up-to-date.&lt;/p&gt;
+&lt;h1 id=&#34;5-link-to-third-party-content&#34;&gt;5. Link to third party content&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;5.1&lt;/strong&gt; This website may contain links to websites or applications operated by third parties. We have no influence or
+Control any such third-party websites or applications or third-party operators. We are not responsible
+Do not endorse any third-party websites or applications or their availability or content.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;5.2&lt;/strong&gt; We are not responsible for the advertisements contained in this website. If you agree to purchase goods and/or services
+The actions of any third party that advertises on this website are at your own risk. Advertisers, not us
+If you have any questions or complaints about such goods and/or services, you should contact the advertiser.&lt;/p&gt;
+&lt;h1 id=&#34;6-site-management&#34;&gt;6. Site Management&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;6.1&lt;/strong&gt; We reserve the right at our sole discretion to (1) monitor the website for violations of these terms and conditions;
+(2) Take appropriate legal action against anyone in violation of applicable laws or these terms and conditions;
+(3) Reject, restrict access or availability (to the extent technically feasible) or disable any
+Contribute; (4) Remove from the website or otherwise disable all oversize or in any way
+The burden of our system; (5) Manage the website in a way that protects our rights and property, and
+Promote the normal operation of websites and services.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;6.2&lt;/strong&gt; We do not guarantee the safety of this website or that there are no errors or viruses.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;6.3&lt;/strong&gt; You are responsible for configuring your information technology, computer programs and platform to access the website
+And you should use your own virus protection software.&lt;/p&gt;
+&lt;h1 id=&#34;7-modifications-to-and-availability-of-the-site&#34;&gt;7. Modifications to and availability of the Site&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;7.1&lt;/strong&gt; We reserve the right to change, modify, or remove the contents of the Site at any time or for any reason at our 
+sole discretion without notice. We also reserve the right to modify or discontinue all or part of the Services without notice at any time.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;7.2&lt;/strong&gt; We cannot guarantee that this website and services are always available. We may encounter hardware, software or
+Other problems or the need to perform site-related maintenance, resulting in interruptions, delays or errors.
+You agree that we will not be responsible for any loss, damage or inconvenience caused by your inaccessibility or access.
+Use this website or service during any downtime or interruption of this website or service. We have no obligation to maintain and
+Support the website or service, or provide any corrections, updates or postings.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;7.3&lt;/strong&gt; Some information on this website may contain typographical errors, inaccuracies or omissions, which may be related to
+Services, including descriptions, prices, availability and various other information. We reserve the right to make corrections
+Any errors, inaccuracies or omissions, and the information can be changed or updated at any time without notice.&lt;/p&gt;
+&lt;h1 id=&#34;8-disclaimerlimitation-of-liability&#34;&gt;8. Disclaimer/Limitation of Liability&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;8.1&lt;/strong&gt; Websites and services are provided as-is and availability. You agree to your use of this website and/or
+Except as expressly specified in these terms and conditions, service is at your own risk. All guarantees, terms,
+Express or implied conditions and commitments (including statutory law, customs or usage, transaction process or common law)
+Information related to websites and services and their use, including but not limited to the implied warranty of the following:
+To the maximum extent permitted by applicable law, it does not include satisfactory quality, adaptability to specific uses and non-infringement.&lt;/p&gt;
+&lt;p&gt;We make no guarantees or representations about the accuracy or completeness of the content of this website, nor do we assume any responsibility for this website.
+(1) Errors or omissions of content: (2) Unauthorized access or use of our servers and/or any and all individuals
+Information and/or financial information stored on our servers; (3) Interruption or cessation of any transmission to or from
+Website or service; and/or (4) Any errors, viruses, Trojan horses,May be transferred to or through
+The website is owned by any third party. We are not responsible for any delay or failure to fulfill our obligations under these terms
+If such delays or malfunctions are due to events beyond our reasonable control, the terms and conditions.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;8.2&lt;/strong&gt; Our responsibility for loss or damage suffered by you:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Whether you are a consumer or a business user:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;If you do this illegally, we will not exclude or limit our liability to you in any way. This includes responsibility
+Death or personal injury caused by our negligence or the negligence of employees, agents or subcontractors; and
+Fraud or false statements.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;If we do not comply with these terms and conditions, we will be responsible for the following losses or damages you suffered:
+We violate these terms and conditions for the foreseeable results, but we are not responsible for any loss or damage
+Unpredictable information when starting to use the website/service.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Although the “Exemption/Liability Limitation” section contains any contrary provisions, we
+Whatever the reason, no matter what form of action you take, you will be limited to the total at any time
+The amount is equal to (a) the sum of £5,000 or (b) the amount you paid to us for the service/site (whichever is higher)
+Within six (6) months before any cause of action arises. Different limits and exclusions of liability
+Applicable to liability arising from the provision of any product to you, which will be stipulated in our terms and conditions
+Supply [https://www.google.com/adsense/new/localized-terms?gsessionid=8De9dfTBg0gl_YSrgVVytEUhi1c8R4CT].&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;If you are a business user:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;We shall not be responsible for any loss or damage, whether due to contract, infringement (including negligence), or violation of legal provisions.
+Responsibilities arising from or related to the following reasons, or other foreseeable responsibilities&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Use or be unable to use our website/service; or&lt;/li&gt;
+&lt;li&gt;Use or rely on any content displayed on our website.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In particular, we will not assume the following responsibilities:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Loss of profits, sales, business or income;&lt;/li&gt;
+&lt;li&gt;Business interruption;&lt;/li&gt;
+&lt;li&gt;Loss expected to be saved;
+*Lost business opportunities, goodwill or reputation; or&lt;/li&gt;
+&lt;li&gt;Any indirect or indirect loss or damage.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;If you are a consumer user:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Please note that we only provide this website for family and private use. You agree not to use our website for any commercial purpose
+Or business purpose, for any profit loss, business loss, business interruption,
+Or lose business opportunities.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;If the defective digital content we provided damaged your device or digital content, this is
+We will compensate you for the damage caused by our failure to use reasonable care and skills.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;You have legal rights to defective or undescribed goods. Provide advice about your legal rights
+From your local Citizens Advice Bureau or Trade Standards Office. Nothing in these terms and conditions will affect these legal rights.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;9-term-and-termination&#34;&gt;9. Term and termination&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;9.1&lt;/strong&gt; These terms and conditions still have full effect when you use this website or service or under other circumstances.
+Users of the website (if applicable). You can terminate the use or participation at any time by the following methods for any reason
+Instructions for terminating the user account in your account settings (if any), or by contacting us
+&lt;a href=&#34;mailto:cemalonder1@gmail.com&#34;&gt;cemalonder1@gmail.com&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;9.2&lt;/strong&gt; Without limiting any other provisions of these terms and conditions, we reserve the right to make our own decisions
+Without further notice or taking any responsibility, refuse to access and use this website and services (including blocking certain IP addresses),
+For any reason to any person, including but not limited to violation of any statement, warranty or covenant contained in this agreement
+These terms and conditions or any applicable laws or regulations.&lt;/p&gt;
+&lt;p&gt;If we decide in our sole discretion that your use of the website/service violates these terms and conditions, or
+In accordance with any applicable laws or regulations, we may terminate your use of this website and services or participate in or delete any
+We at our sole discretion decide to post your content or information at any time without warning.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;9.3&lt;/strong&gt; If we terminate or suspend your account for any reason described in Section 9, registration is prohibited
+And create a new account with your name, pseudonym or borrowed name or any third party name, even if you may be acting
+On behalf of a third party. In addition to terminating or suspending your account, we reserve the right to take appropriate measures
+Legal proceedings, including but not limited to seeking civil, criminal and injunctive compensation.&lt;/p&gt;
+&lt;h1 id=&#34;10-general&#34;&gt;10. General&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;10.1&lt;/strong&gt; Visit this website, send us an e-mail and fill out an online form to constitute an electronic communication. You agree
+By receiving electronic communications, you agree to all our agreements, notices, disclosures and other communications
+It is provided to you by e-mail and electronically on the website to meet any legal requirements for such communication in writing.&lt;/p&gt;
+&lt;p&gt;**You hereby agree to use electronic signatures, contracts, orders and other records, and agree to send them electronically
+Notifications, policies and records of transactions initiated or completed by us or through this website. **You hereby waive any rights or
+Requirements of any regulations, rules, rules, regulations or other laws required by the original in any jurisdiction
+Signature or delivery or retention of non-electronic records, or payment or credit by means other than electronic.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;10.2&lt;/strong&gt; These terms and conditions and any policies or operating rules that we publish on the website or regarding the service
+Constitute all agreements and understanding between you and us.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;10.3&lt;/strong&gt; Our failure to exercise or enforce any right or provision of these terms and conditions should not be regarded as
+Relinquish such rights or regulations.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;10.4&lt;/strong&gt; We can transfer some or all of our rights and obligations to others at any time.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;10.5&lt;/strong&gt; We are not responsible for any loss, damage, delay or omission caused by any other reason
+Our reasonable control.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;10.6&lt;/strong&gt; If any provision or part of these terms and conditions is illegal, invalid or unenforceable,
+Terms or conditions are considered divisible and do not affect validity
+The enforceability of the remaining clauses.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;10.7&lt;/strong&gt; Therefore, you have not established any joint venture, partnership, employment or agency relationship with us
+These terms and conditions or the use of the website or service.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;10.8&lt;/strong&gt; Applicable to consumers only-please note that the terms and conditions of these terms and conditions are
+Subject to English law. You and we agree that the courts of England and Wales will have exclusive jurisdiction
+I hope that if you are a resident of Northern Ireland, you can also file a lawsuit in Northern Ireland, and if you are
+As a resident of Scotland, you can also file a lawsuit in Scotland. If you have any complaints or want to dispute
+According to these terms and conditions or other terms related to the website, please visit this link &lt;a href=&#34;http://ec.europa.eu/odr&#34;&gt;http://ec.europa.eu/odr&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;10.9&lt;/strong&gt; For corporate users only-if you are a corporate user, please abide by the following terms and conditions, its subject and
+The composition (and any non-contractual disputes or claims) are governed by English law. We all agree to exclusive
+The jurisdiction of the courts of England and Wales.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;10.10&lt;/strong&gt; People who are not parties to these terms and conditions are not entitled to the contract
+The 1999 (Third Party Rights) Act to enforce any of these terms and conditions.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;10.11&lt;/strong&gt; In order to resolve complaints about the service or obtain more information about using the service
+Service, please contact us by email 
+&lt;a href=&#34;mailto:cemalonder1@gmail.com&#34;&gt;cemalonder1@gmail.com&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>BotCV Website Source</title>
+      <link>http://cemalonder.com/project/botcv-website-source/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      <guid>http://cemalonder.com/project/botcv-website-source/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Internal Project</title>
+      <link>http://cemalonder.com/project/internal-project/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      <guid>http://cemalonder.com/project/internal-project/</guid>
+      <description>&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis posuere tellus ac convallis placerat. Proin tincidunt magna sed ex sollicitudin condimentum. Sed ac faucibus dolor, scelerisque sollicitudin nisi. Cras purus urna, suscipit quis sapien eu, pulvinar tempor diam. Quisque risus orci, mollis id ante sit amet, gravida egestas nisl. Sed ac tempus magna. Proin in dui enim. Donec condimentum, sem id dapibus fringilla, tellus enim condimentum arcu, nec volutpat est felis vel metus. Vestibulum sit amet erat at nulla eleifend gravida.&lt;/p&gt;
+&lt;p&gt;Nullam vel molestie justo. Curabitur vitae efficitur leo. In hac habitasse platea dictumst. Sed pulvinar mauris dui, eget varius purus congue ac. Nulla euismod, lorem vel elementum dapibus, nunc justo porta mi, sed tempus est est vel tellus. Nam et enim eleifend, laoreet sem sit amet, elementum sem. Morbi ut leo congue, maximus velit ut, finibus arcu. In et libero cursus, rutrum risus non, molestie leo. Nullam congue quam et volutpat malesuada. Sed risus tortor, pulvinar et dictum nec, sodales non mi. Phasellus lacinia commodo laoreet. Nam mollis, erat in feugiat consectetur, purus eros egestas tellus, in auctor urna odio at nibh. Mauris imperdiet nisi ac magna convallis, at rhoncus ligula cursus.&lt;/p&gt;
+&lt;p&gt;Cras aliquam rhoncus ipsum, in hendrerit nunc mattis vitae. Duis vitae efficitur metus, ac tempus leo. Cras nec fringilla lacus. Quisque sit amet risus at ipsum pharetra commodo. Sed aliquam mauris at consequat eleifend. Praesent porta, augue sed viverra bibendum, neque ante euismod ante, in vehicula justo lorem ac eros. Suspendisse augue libero, venenatis eget tincidunt ut, malesuada at lorem. Donec vitae bibendum arcu. Aenean maximus nulla non pretium iaculis. Quisque imperdiet, nulla in pulvinar aliquet, velit quam ultrices quam, sit amet fringilla leo sem vel nunc. Mauris in lacinia lacus.&lt;/p&gt;
+&lt;p&gt;Suspendisse a tincidunt lacus. Curabitur at urna sagittis, dictum ante sit amet, euismod magna. Sed rutrum massa id tortor commodo, vitae elementum turpis tempus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean purus turpis, venenatis a ullamcorper nec, tincidunt et massa. Integer posuere quam rutrum arcu vehicula imperdiet. Mauris ullamcorper quam vitae purus congue, quis euismod magna eleifend. Vestibulum semper vel augue eget tincidunt. Fusce eget justo sodales, dapibus odio eu, ultrices lorem. Duis condimentum lorem id eros commodo, in facilisis mauris scelerisque. Morbi sed auctor leo. Nullam volutpat a lacus quis pharetra. Nulla congue rutrum magna a ornare.&lt;/p&gt;
+&lt;p&gt;Aliquam in turpis accumsan, malesuada nibh ut, hendrerit justo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Quisque sed erat nec justo posuere suscipit. Donec ut efficitur arcu, in malesuada neque. Nunc dignissim nisl massa, id vulputate nunc pretium nec. Quisque eget urna in risus suscipit ultricies. Pellentesque odio odio, tincidunt in eleifend sed, posuere a diam. Nam gravida nisl convallis semper elementum. Morbi vitae felis faucibus, vulputate orci placerat, aliquet nisi. Aliquam erat volutpat. Maecenas sagittis pulvinar purus, sed porta quam laoreet at.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>An example journal article</title>
+      <link>http://cemalonder.com/publication/journal-article/</link>
+      <pubDate>Tue, 01 Sep 2015 00:00:00 +0000</pubDate>
+      <guid>http://cemalonder.com/publication/journal-article/</guid>
+      <description>&lt;div class=&#34;alert alert-note&#34;&gt;
+  &lt;div&gt;
+    Click the &lt;em&gt;Cite&lt;/em&gt; button above to demo the feature to enable visitors to import publication metadata into their reference management software.
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;alert alert-note&#34;&gt;
+  &lt;div&gt;
+    Click the &lt;em&gt;Slides&lt;/em&gt; button above to demo Academic&amp;rsquo;s Markdown slides feature.
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Supplementary notes can be added here, including 
+&lt;a href=&#34;https://sourcethemes.com/academic/docs/writing-markdown-latex/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;code and math&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>An example conference paper</title>
+      <link>http://cemalonder.com/publication/conference-paper/</link>
+      <pubDate>Mon, 01 Jul 2013 00:00:00 +0000</pubDate>
+      <guid>http://cemalonder.com/publication/conference-paper/</guid>
+      <description>&lt;div class=&#34;alert alert-note&#34;&gt;
+  &lt;div&gt;
+    Click the &lt;em&gt;Cite&lt;/em&gt; button above to demo the feature to enable visitors to import publication metadata into their reference management software.
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;alert alert-note&#34;&gt;
+  &lt;div&gt;
+    Click the &lt;em&gt;Slides&lt;/em&gt; button above to demo Academic&amp;rsquo;s Markdown slides feature.
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Supplementary notes can be added here, including 
+&lt;a href=&#34;https://sourcethemes.com/academic/docs/writing-markdown-latex/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;code and math&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>http://cemalonder.com/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://cemalonder.com/about/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>http://cemalonder.com/courses/example/example1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://cemalonder.com/courses/example/example1/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>http://cemalonder.com/courses/example/example2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://cemalonder.com/courses/example/example2/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

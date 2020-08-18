@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>jenkins | Cemal Önder</title>
+    <link>http://cemalonder.com/tag/jenkins/</link>
+      <atom:link href="http://cemalonder.com/tag/jenkins/index.xml" rel="self" type="application/rss+xml" />
+    <description>jenkins</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Thu, 16 Jul 2020 00:56:17 +0300</lastBuildDate>
+    <image>
+      <url>http://cemalonder.com/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
+      <title>jenkins</title>
+      <link>http://cemalonder.com/tag/jenkins/</link>
+    </image>
+    
+    <item>
+      <title>Github Integration With Local Jenkins</title>
+      <link>http://cemalonder.com/post/github-integration-with-local-jenkins/</link>
+      <pubDate>Thu, 16 Jul 2020 00:56:17 +0300</pubDate>
+      <guid>http://cemalonder.com/post/github-integration-with-local-jenkins/</guid>
+      <description>&lt;h3 id=&#34;1-overview&#34;&gt;1. Overview&lt;/h3&gt;
+&lt;p&gt;Sometimes it is very beneficial to have your own Jenkins:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;You have a ready Jenkins in your company but you are just learning Jenkins and you are pushing every little change
+to the repository which makes them dirty&lt;/li&gt;
+&lt;li&gt;You don&amp;rsquo;t have a ready Jenkins and want to give it a try&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Jenkins works with repositories which makes it a great tool for CI &amp;amp; CD. Communication between Jenkins and the repository
+manager is bi-directional, where the repository manager (Github in our case) pushes changes to Jenkins and Jenkins also fetches
+the repo from Github. So if you want to give it a try, Github must be able to access it. But it is not possible while you
+are using Jenkins locally since &lt;strong&gt;Github can not access your localhost:8080&lt;/strong&gt;. So you should install a Jenkins to a server
+you own where this is not always possible.&lt;/p&gt;
+&lt;p&gt;In this article, we are going to set up everything from scratch with a basic &amp;amp; quick way and &lt;strong&gt;we will integrate Github with
+locally running Jenkins.&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&#34;2-install-jenkins-with-docker&#34;&gt;2. Install Jenkins with Docker&lt;/h3&gt;
+&lt;p&gt;Docker is the easiest way to start using Jenkins. Here are the steps for downloading the docker image, starting a new container
+and setting up Jenkins:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.&lt;/strong&gt; Start local Jenkins by running following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -p 8080:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This creates a Jenkins on port 8080 with a volume &lt;strong&gt;jenkins_home&lt;/strong&gt; managed by docker. It is not suggested by Jenkins 
+to map the volume to the host, so we will keep the volume in this way.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2.&lt;/strong&gt; There is an initial administrator password in our terminal when we run above command:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;jenkins_startup.png&#34; alt=&#34;jenkins startup&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Copy this password then go to localhost:8080. Enter password here and continue:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;initial_admin.png&#34; alt=&#34;initial admin&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3.&lt;/strong&gt; Select install suggested plugins and wait for the installation process finish. This will install plugins like Git, SVN, etc.
+where we are going to use it in the next steps.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;install_plugins.png&#34; alt=&#34;install plugins&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4.&lt;/strong&gt; Optionally let&amp;rsquo;s also create an admin user to later use instead of initial admin.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;create_admin.png&#34; alt=&#34;create admin&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;5.&lt;/strong&gt; Finish the installation by applying the default URL since we will keep using localhost.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;installation_finish.png&#34; alt=&#34;finish installation&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;3-create-a-project-in-github&#34;&gt;3. Create a Project in Github&lt;/h3&gt;
+&lt;p&gt;You may already have a project, for the tutorial purpose let&amp;rsquo;s also create a new fresh project &lt;strong&gt;Github-integration-with-local-jenkins&lt;/strong&gt;
+which is located 
+&lt;a href=&#34;https://github.com/cmlonder/github-integration-with-local-jenkins&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;And let&amp;rsquo;s add a simple Jenkinsfile to the root of the project which simply echos Hello World&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;pipeline {
+    agent any
+
+    stages {
+        stage(&#39;Hello&#39;) {
+            steps {
+                echo &#39;Hello World&#39;
+            }
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;4-create-an-access-token-in-github&#34;&gt;4. Create an Access Token in Github&lt;/h3&gt;
+&lt;p&gt;Jenkins will try to reach Github for a bunch of operations where it will need some access token. Let&amp;rsquo;s create this token:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.&lt;/strong&gt; Click on your profile icon then select &lt;strong&gt;Settings&lt;/strong&gt; from the dropdown then select &lt;strong&gt;Developer Settings&lt;/strong&gt; from the
+left navigation panel&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;developer_settings.png&#34; alt=&#34;developer settings&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2.&lt;/strong&gt; Select &lt;strong&gt;Personal access tokens&lt;/strong&gt; and click on &lt;strong&gt;Generate new token&lt;/strong&gt;
+&lt;img src=&#34;create_access_token.png&#34; alt=&#34;create access token&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3.&lt;/strong&gt; Now we should select the scopes of our token. &lt;strong&gt;repo&lt;/strong&gt; and &lt;strong&gt;admin:repo_hook&lt;/strong&gt; scopes are enough for our operations.
+Select them, give them a note, and generate the token.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;local_jenkins_token.png&#34; alt=&#34;local_jenkins_token&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4.&lt;/strong&gt; Don&amp;rsquo;t forget to &lt;strong&gt;TAKE NOT&lt;/strong&gt; of this generated token since you will not able to see it again.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;access_token.png&#34; alt=&#34;access token&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Now we are ready to create a job in Jenkins. We will use this token while configuring Github in the Jenkins.&lt;/p&gt;
+&lt;h3 id=&#34;5-configure-github-server-in-jenkins&#34;&gt;5. Configure Github Server in Jenkins&lt;/h3&gt;
+&lt;p&gt;Before creating a new job, let&amp;rsquo;s add the token we generated in Github to our Jenkins.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.&lt;/strong&gt; Go to Jenkins Home and click on &lt;strong&gt;Manage Jenkins&lt;/strong&gt; then select &lt;strong&gt;Configure System&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;manage_jenkins.png&#34; alt=&#34;manage jenkins&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2.&lt;/strong&gt; Scroll down to the Github section. Click on &lt;strong&gt;Add Github Server&lt;/strong&gt; then give it a name like &lt;strong&gt;github api&lt;/strong&gt;. Check 
+&lt;strong&gt;Manage hooks&lt;/strong&gt;. We need to enter our credentials for Github. We will use the token we generated in the previous step.
+Click on &lt;strong&gt;Add&lt;/strong&gt; and select &lt;strong&gt;Jenkins&lt;/strong&gt;
+&lt;img src=&#34;add_github_server.png&#34; alt=&#34;add github server&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3.&lt;/strong&gt; Now you see a popup to add a credential. Select &lt;strong&gt;Global credentials&lt;/strong&gt; and &lt;strong&gt;Secret text&lt;/strong&gt;.
+Enter your generated access token which you created in the previous step from Github. Finally, enter a description (
+&lt;strong&gt;github access token&lt;/strong&gt; in this case) and add it.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;add_token.png&#34; alt=&#34;add token to jenkins&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4.&lt;/strong&gt; As the last step, select the credential you created (github access token) in the popup and click on &lt;strong&gt;Test connection&lt;/strong&gt;.
+A response should appear on the screen which shows remaining API limits for your user. See 
+
+&lt;a href=&#34;https://developer.github.com/apps/building-github-apps/understanding-rate-limits-for-github-apps/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt; for Github
+API rate limit information, but it is enough for learning purposes.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;save_github_server.png&#34; alt=&#34;save Github server&#34;&gt;&lt;/p&gt;
+&lt;p&gt;We successfully added a credential to access Github APIs. Let&amp;rsquo;s continue with creating a new job.&lt;/p&gt;
+&lt;h3 id=&#34;6-create-a-new-job&#34;&gt;6. Create a New Job&lt;/h3&gt;
+&lt;p&gt;We need to create a job in Jenkins by setting up our project URL and giving Github access so that Jenkins can fetch our
+project to build it within our pipeline. Let&amp;rsquo;s set it up step by step&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.&lt;/strong&gt; Click on create a new item
+&lt;img src=&#34;new_item.png&#34; alt=&#34;new item&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2.&lt;/strong&gt; Select &lt;strong&gt;Pipeline&lt;/strong&gt; and give it a name
+
+&lt;a href=&#34;https://github.com/cmlonder/go-dockerized-coverage&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;new_pipeline.png&#34; alt=&#34;new job&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3.&lt;/strong&gt; Now we should configure our job. Click (or scroll) to &lt;strong&gt;Build Triggers&lt;/strong&gt; section and check &lt;strong&gt;Github hook trigger for GITScm polling&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;configure_webhook.png&#34; alt=&#34;configure webhook&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4.&lt;/strong&gt; Click on &lt;strong&gt;Pipeline&lt;/strong&gt; and select &lt;strong&gt;Pipeline script from SCM&lt;/strong&gt; from Definition dropdown. This configures Jenkins 
+job that we will use instructions from our project&amp;rsquo;s  Jenkinsfile to run the pipeline. Enter your
+&lt;em&gt;&amp;hellip;git&lt;/em&gt; repository URL.&lt;/p&gt;
+&lt;h3 id=&#34;7-expose-your-localhost-with-ngrok&#34;&gt;7. Expose Your Localhost with NGROK&lt;/h3&gt;
+&lt;p&gt;As mentioned at the beginning of the article, we need a way to Github to communicate with our local running Jenkins. There is a way
+for it; exposing your local with a tunnel to the web. &lt;strong&gt;NGROK&lt;/strong&gt; is the easiest way for this which makes it available with
+a simple command. But it &lt;strong&gt;SHOULD NOT&lt;/strong&gt; be used for production purposes.&lt;/p&gt;
+&lt;p&gt;First download ngrok for your operating system 
+&lt;a href=&#34;https://ngrok.com/download&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Then type the following command in your terminal (if you did not add ngrok to PATH, cd into your ngrok download directory);&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ngrok http 8080
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This exposes your &lt;strong&gt;8080&lt;/strong&gt; which is the port Jenkins is running on to the web via ngrok. After you type it, you should see
+the exposed URL like following in your terminal:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;ngrok.png&#34; alt=&#34;ngrok&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Copy the Http forwarding URL and paste it to your browser, you will be redirected to your local Jenkins server. We are ready
+to go to the next step, configuring Github for webhooks with Jenkins.&lt;/p&gt;
+&lt;h3 id=&#34;8-configure-webhook-url-for-your-project-in-github&#34;&gt;8. Configure Webhook URL for your Project in Github&lt;/h3&gt;
+&lt;p&gt;Go to your project page and click on &lt;strong&gt;Settings&lt;/strong&gt; tab. Then click &lt;strong&gt;Webhooks&lt;/strong&gt; from the left navigation panel and
+click on &lt;strong&gt;Add webhook&lt;/strong&gt;. Now you should see the following screen:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;add_webhook.png&#34; alt=&#34;add webhook&#34;&gt;&lt;/p&gt;
+&lt;p&gt;For the Payload URL you should add your ngrok URL from previous step + &lt;strong&gt;/github-webhook/&lt;/strong&gt; which 
+will be ${YOUR_NGROK_URL}&lt;strong&gt;/github-webhook/&lt;/strong&gt;. So my ngrok URL is: &lt;a href=&#34;http://d9cdfa47e311.ngrok.io&#34;&gt;http://d9cdfa47e311.ngrok.io&lt;/a&gt; then my
+Payload URL is &lt;strong&gt;&lt;a href=&#34;http://d9cdfa47e311.ngrok.io/github-webhook/&#34;&gt;http://d9cdfa47e311.ngrok.io/github-webhook/&lt;/a&gt;&lt;/strong&gt; Trailing Slash &lt;strong&gt;/&lt;/strong&gt; at the end is imported which may cause
+redirection problem if you don&amp;rsquo;t add. (Also you can&amp;rsquo;t trigger this URL in the browser since /github-webhook provided by Jenkins
+for &lt;strong&gt;POST&lt;/strong&gt; requests)&lt;/p&gt;
+&lt;p&gt;Select &lt;strong&gt;application/json&lt;/strong&gt; as content type and pick &lt;strong&gt;Just the push event&lt;/strong&gt;. This configures when to call Jenkins if you want
+to configure detailed hooks, select &lt;strong&gt;Let me select individual events&lt;/strong&gt; and then you can pick the events like Pull Requests, Pushes,
+Releases etc. to trigger calling your Jenkins endpoint.&lt;/p&gt;
+&lt;p&gt;Finally, add the webhook.&lt;/p&gt;
+&lt;h3 id=&#34;9-push-changes-to-github-to-trigger-local-jenkins-pipeline&#34;&gt;9. Push changes to Github to Trigger Local Jenkins Pipeline&lt;/h3&gt;
+&lt;p&gt;Before triggering the job via push to Github, I had to trigger it once manually otherwise pipeline is not triggered. I could not
+find a description for it but I guess plugin checks the local difference of the repository with the changes it 
+received but it needs an initial pull of the repo to the local. So first build it manually once:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;build_initially.png&#34; alt=&#34;build manually&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Now let&amp;rsquo;s add a small change to the repo and push it. I changed my echo message from &lt;strong&gt;Hello World&lt;/strong&gt; to &lt;strong&gt;Hello World from localhost&lt;/strong&gt; and
+pushed it to my repo.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;push_changes.png&#34; alt=&#34;git changes&#34;&gt;&lt;/p&gt;
+&lt;p&gt;And 2nd build is automatically triggered!&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;build_triggered.png&#34; alt=&#34;build triggered&#34;&gt;&lt;/p&gt;
+&lt;p&gt;And if you click on the build details (#2 in the above screen) and then click &lt;strong&gt;Console Output&lt;/strong&gt; you can see the build
+details. Here are the important parts of log in my console;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;it shows that pipeline is started by a &lt;strong&gt;push&lt;/strong&gt; to the repository&lt;/li&gt;
+&lt;li&gt;with the commit message &lt;strong&gt;hello from localhost&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;and runs the Jenkinsfile in the repository by showing &lt;strong&gt;Hello World from localhost&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;Started by GitHub push by cmlonder
+
+.... SOME MORE MESSAGE REGARDING GITHUB CHANGES ....
+
+Commit message: &amp;quot;hello from localhost&amp;quot;
+
+.... SOME MORE MESSAGE REGARDING GITHUB CHANGES ....
+
+Hello World from localhost
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;10-summary&#34;&gt;10. Summary&lt;/h3&gt;
+&lt;p&gt;In this post, we made the integration of local Jenkins using Docker containers to the Github. Also, we saw how to create 
+a job, add a Github credential, configure your pipeline with Jenkinsfile, add a webhook from your repository to your Jenkins.&lt;/p&gt;
+&lt;p&gt;You can find source code of this project in 
+&lt;a href=&#34;https://github.com/cmlonder/github-integration-with-local-jenkins&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Github&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;11-resources&#34;&gt;11. Resources&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;&#34;&gt;https://www.jenkins.io/doc/book/pipeline/jenkinsfile/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

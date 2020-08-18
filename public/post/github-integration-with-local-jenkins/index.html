@@ -1,0 +1,1247 @@
+<!DOCTYPE html><html lang="en-us" >
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.8.0">
+  <meta name="yandex-verification" content="17769ee43c427b2a" />
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Cemal Önder">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="In this article, we are going to setup local Jenkins and integrate it with Github Repository which will trigger local Jenkins when we push some changes.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="http://cemalonder.com/post/github-integration-with-local-jenkins/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-1/css/all.min.css" integrity="sha256-4w9DunooKSr3MFXHXWyFER38WmPdm361bQS/2KUWZbU=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" integrity="sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM=" crossorigin="anonymous">
+    
+
+    
+
+    
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.1.2/lazysizes.min.js" integrity="sha256-Md1qLToewPeKjfAHU1zyPwOutccPAm5tahnaw7Osw0A=" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+        
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.css">
+
+  
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-147978839-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+
+  function gtag() {
+      dataLayer.push(arguments);
+  }
+
+  function trackOutboundLink(url, target) {
+    gtag('event', 'click', {
+         'event_category': 'outbound',
+         'event_label': url,
+         'transport_type': 'beacon',
+         'event_callback': function () {
+           if (target !== '_blank') {
+             document.location = url;
+           }
+         }
+    });
+    console.debug("Outbound link clicked: " + url);
+  }
+
+  function onClickCallback(event) {
+    if ((event.target.tagName !== 'A') || (event.target.host === window.location.host)) {
+      return;
+    }
+    trackOutboundLink(event.target, event.target.getAttribute('target'));  
+  }
+
+  gtag('js', new Date());
+  gtag('config', 'UA-147978839-1', { 'anonymize_ip': true });
+
+  
+  document.addEventListener('click', onClickCallback, false);
+</script>
+
+
+  
+
+
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_32x32_fill_lanczos_center_2.png">
+  <link rel="apple-touch-icon" type="image/png" href="/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png">
+
+  <link rel="canonical" href="http://cemalonder.com/post/github-integration-with-local-jenkins/">
+
+  
+  
+  
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="Cemal Önder">
+  <meta property="og:url" content="http://cemalonder.com/post/github-integration-with-local-jenkins/">
+  <meta property="og:title" content="Github Integration With Local Jenkins | Cemal Önder">
+  <meta property="og:description" content="In this article, we are going to setup local Jenkins and integrate it with Github Repository which will trigger local Jenkins when we push some changes."><meta property="og:image" content="http://cemalonder.com/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png">
+  <meta property="twitter:image" content="http://cemalonder.com/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2020-07-16T00:56:17&#43;03:00">
+    
+    <meta property="article:modified_time" content="2020-07-16T00:56:17&#43;03:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://cemalonder.com/post/github-integration-with-local-jenkins/"
+  },
+  "headline": "Github Integration With Local Jenkins",
+  
+  "datePublished": "2020-07-16T00:56:17+03:00",
+  "dateModified": "2020-07-16T00:56:17+03:00",
+  
+  "author": {
+    "@type": "Person",
+    "name": "Cemal Önder"
+  },
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "Cemal Önder",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://cemalonder.com/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_192x192_fill_lanczos_center_2.png"
+    }
+  },
+  "description": "In this article, we are going to setup local Jenkins and integrate it with Github Repository which will trigger local Jenkins when we push some changes."
+}
+</script>
+
+  
+
+  
+
+
+  
+  
+  
+  
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.js" integrity="sha256-5VhCqFam2Cn+yjw61zbBNrbHVJ6SRydPeKopYlngbiQ=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.css" integrity="sha256-zQ0LblD/Af8vOppw18+2anxsuaz3pWYyVWi+bTvTH8Q=" crossorigin="anonymous">
+  
+  <script>
+  window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#2962ff",
+          "text": "#fff"
+        },
+        "button": {
+          "background": "#fff",
+          "text": "#2962ff"
+        }
+      },
+      "theme": "classic",
+      "content": {
+        "message": "This website uses cookies to ensure you get the best experience on our website.",
+        "dismiss": "Got it!",
+        "link": "Learn more",
+        "href": "/privacy/"
+      }
+    })});
+  </script>
+
+
+
+  
+
+
+
+
+
+  <title>Github Integration With Local Jenkins | Cemal Önder</title>
+
+</head>
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+
+
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/">Cemal Önder</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/">Cemal Önder</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-start" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#posts"><span>Posts</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/about/"><span>About</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+      
+      <li class="nav-item">
+        <a class="nav-link js-search" href="#" aria-label="Search"><i class="fas fa-search" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+      <li class="nav-item dropdown theme-dropdown">
+        <a href="#" class="nav-link js-theme-selector" data-toggle="dropdown" aria-haspopup="true">
+          <i class="fas fa-palette" aria-hidden="true"></i>
+        </a>
+        <div class="dropdown-menu">
+          <a href="#" class="dropdown-item js-set-theme-light">
+            <span>Light</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-dark">
+            <span>Dark</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-auto">
+            <span>Automatic</span>
+          </a>
+        </div>
+      </li>
+      
+
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  <article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1>Github Integration With Local Jenkins</h1>
+
+  
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+  
+  
+  <div>
+    
+
+  
+  <span ><a href="/author/cemal-onder/">Cemal Önder</a></span>
+  </div>
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    Jul 16, 2020
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    7 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/category/integration/">integration</a>, <a href="/category/continuous-integration/">continuous integration</a></span>
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      <h3 id="1-overview">1. Overview</h3>
+<p>Sometimes it is very beneficial to have your own Jenkins:</p>
+<ul>
+<li>You have a ready Jenkins in your company but you are just learning Jenkins and you are pushing every little change
+to the repository which makes them dirty</li>
+<li>You don&rsquo;t have a ready Jenkins and want to give it a try</li>
+</ul>
+<p>Jenkins works with repositories which makes it a great tool for CI &amp; CD. Communication between Jenkins and the repository
+manager is bi-directional, where the repository manager (Github in our case) pushes changes to Jenkins and Jenkins also fetches
+the repo from Github. So if you want to give it a try, Github must be able to access it. But it is not possible while you
+are using Jenkins locally since <strong>Github can not access your localhost:8080</strong>. So you should install a Jenkins to a server
+you own where this is not always possible.</p>
+<p>In this article, we are going to set up everything from scratch with a basic &amp; quick way and <strong>we will integrate Github with
+locally running Jenkins.</strong></p>
+<h3 id="2-install-jenkins-with-docker">2. Install Jenkins with Docker</h3>
+<p>Docker is the easiest way to start using Jenkins. Here are the steps for downloading the docker image, starting a new container
+and setting up Jenkins:</p>
+<p><strong>1.</strong> Start local Jenkins by running following command:</p>
+<pre><code>docker run -p 8080:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts
+</code></pre>
+<p>This creates a Jenkins on port 8080 with a volume <strong>jenkins_home</strong> managed by docker. It is not suggested by Jenkins 
+to map the volume to the host, so we will keep the volume in this way.</p>
+<p><strong>2.</strong> There is an initial administrator password in our terminal when we run above command:</p>
+<p><img src="jenkins_startup.png" alt="jenkins startup"></p>
+<p>Copy this password then go to localhost:8080. Enter password here and continue:</p>
+<p><img src="initial_admin.png" alt="initial admin"></p>
+<p><strong>3.</strong> Select install suggested plugins and wait for the installation process finish. This will install plugins like Git, SVN, etc.
+where we are going to use it in the next steps.</p>
+<p><img src="install_plugins.png" alt="install plugins"></p>
+<p><strong>4.</strong> Optionally let&rsquo;s also create an admin user to later use instead of initial admin.</p>
+<p><img src="create_admin.png" alt="create admin"></p>
+<p><strong>5.</strong> Finish the installation by applying the default URL since we will keep using localhost.</p>
+<p><img src="installation_finish.png" alt="finish installation"></p>
+<h3 id="3-create-a-project-in-github">3. Create a Project in Github</h3>
+<p>You may already have a project, for the tutorial purpose let&rsquo;s also create a new fresh project <strong>Github-integration-with-local-jenkins</strong>
+which is located 
+<a href="https://github.com/cmlonder/github-integration-with-local-jenkins" target="_blank" rel="noopener">here</a></p>
+<p>And let&rsquo;s add a simple Jenkinsfile to the root of the project which simply echos Hello World</p>
+<pre><code>pipeline {
+    agent any
+
+    stages {
+        stage('Hello') {
+            steps {
+                echo 'Hello World'
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="4-create-an-access-token-in-github">4. Create an Access Token in Github</h3>
+<p>Jenkins will try to reach Github for a bunch of operations where it will need some access token. Let&rsquo;s create this token:</p>
+<p><strong>1.</strong> Click on your profile icon then select <strong>Settings</strong> from the dropdown then select <strong>Developer Settings</strong> from the
+left navigation panel</p>
+<p><img src="developer_settings.png" alt="developer settings"></p>
+<p><strong>2.</strong> Select <strong>Personal access tokens</strong> and click on <strong>Generate new token</strong>
+<img src="create_access_token.png" alt="create access token"></p>
+<p><strong>3.</strong> Now we should select the scopes of our token. <strong>repo</strong> and <strong>admin:repo_hook</strong> scopes are enough for our operations.
+Select them, give them a note, and generate the token.</p>
+<p><img src="local_jenkins_token.png" alt="local_jenkins_token"></p>
+<p><strong>4.</strong> Don&rsquo;t forget to <strong>TAKE NOT</strong> of this generated token since you will not able to see it again.</p>
+<p><img src="access_token.png" alt="access token"></p>
+<p>Now we are ready to create a job in Jenkins. We will use this token while configuring Github in the Jenkins.</p>
+<h3 id="5-configure-github-server-in-jenkins">5. Configure Github Server in Jenkins</h3>
+<p>Before creating a new job, let&rsquo;s add the token we generated in Github to our Jenkins.</p>
+<p><strong>1.</strong> Go to Jenkins Home and click on <strong>Manage Jenkins</strong> then select <strong>Configure System</strong></p>
+<p><img src="manage_jenkins.png" alt="manage jenkins"></p>
+<p><strong>2.</strong> Scroll down to the Github section. Click on <strong>Add Github Server</strong> then give it a name like <strong>github api</strong>. Check 
+<strong>Manage hooks</strong>. We need to enter our credentials for Github. We will use the token we generated in the previous step.
+Click on <strong>Add</strong> and select <strong>Jenkins</strong>
+<img src="add_github_server.png" alt="add github server"></p>
+<p><strong>3.</strong> Now you see a popup to add a credential. Select <strong>Global credentials</strong> and <strong>Secret text</strong>.
+Enter your generated access token which you created in the previous step from Github. Finally, enter a description (
+<strong>github access token</strong> in this case) and add it.</p>
+<p><img src="add_token.png" alt="add token to jenkins"></p>
+<p><strong>4.</strong> As the last step, select the credential you created (github access token) in the popup and click on <strong>Test connection</strong>.
+A response should appear on the screen which shows remaining API limits for your user. See 
+
+<a href="https://developer.github.com/apps/building-github-apps/understanding-rate-limits-for-github-apps/" target="_blank" rel="noopener">here</a> for Github
+API rate limit information, but it is enough for learning purposes.</p>
+<p><img src="save_github_server.png" alt="save Github server"></p>
+<p>We successfully added a credential to access Github APIs. Let&rsquo;s continue with creating a new job.</p>
+<h3 id="6-create-a-new-job">6. Create a New Job</h3>
+<p>We need to create a job in Jenkins by setting up our project URL and giving Github access so that Jenkins can fetch our
+project to build it within our pipeline. Let&rsquo;s set it up step by step</p>
+<p><strong>1.</strong> Click on create a new item
+<img src="new_item.png" alt="new item"></p>
+<p><strong>2.</strong> Select <strong>Pipeline</strong> and give it a name
+
+<a href="https://github.com/cmlonder/go-dockerized-coverage" target="_blank" rel="noopener">here</a>.</p>
+<p><img src="new_pipeline.png" alt="new job"></p>
+<p><strong>3.</strong> Now we should configure our job. Click (or scroll) to <strong>Build Triggers</strong> section and check <strong>Github hook trigger for GITScm polling</strong>.</p>
+<p><img src="configure_webhook.png" alt="configure webhook"></p>
+<p><strong>4.</strong> Click on <strong>Pipeline</strong> and select <strong>Pipeline script from SCM</strong> from Definition dropdown. This configures Jenkins 
+job that we will use instructions from our project&rsquo;s  Jenkinsfile to run the pipeline. Enter your
+<em>&hellip;git</em> repository URL.</p>
+<h3 id="7-expose-your-localhost-with-ngrok">7. Expose Your Localhost with NGROK</h3>
+<p>As mentioned at the beginning of the article, we need a way to Github to communicate with our local running Jenkins. There is a way
+for it; exposing your local with a tunnel to the web. <strong>NGROK</strong> is the easiest way for this which makes it available with
+a simple command. But it <strong>SHOULD NOT</strong> be used for production purposes.</p>
+<p>First download ngrok for your operating system 
+<a href="https://ngrok.com/download" target="_blank" rel="noopener">here</a></p>
+<p>Then type the following command in your terminal (if you did not add ngrok to PATH, cd into your ngrok download directory);</p>
+<pre><code>ngrok http 8080
+</code></pre>
+<p>This exposes your <strong>8080</strong> which is the port Jenkins is running on to the web via ngrok. After you type it, you should see
+the exposed URL like following in your terminal:</p>
+<p><img src="ngrok.png" alt="ngrok"></p>
+<p>Copy the Http forwarding URL and paste it to your browser, you will be redirected to your local Jenkins server. We are ready
+to go to the next step, configuring Github for webhooks with Jenkins.</p>
+<h3 id="8-configure-webhook-url-for-your-project-in-github">8. Configure Webhook URL for your Project in Github</h3>
+<p>Go to your project page and click on <strong>Settings</strong> tab. Then click <strong>Webhooks</strong> from the left navigation panel and
+click on <strong>Add webhook</strong>. Now you should see the following screen:</p>
+<p><img src="add_webhook.png" alt="add webhook"></p>
+<p>For the Payload URL you should add your ngrok URL from previous step + <strong>/github-webhook/</strong> which 
+will be ${YOUR_NGROK_URL}<strong>/github-webhook/</strong>. So my ngrok URL is: <a href="http://d9cdfa47e311.ngrok.io">http://d9cdfa47e311.ngrok.io</a> then my
+Payload URL is <strong><a href="http://d9cdfa47e311.ngrok.io/github-webhook/">http://d9cdfa47e311.ngrok.io/github-webhook/</a></strong> Trailing Slash <strong>/</strong> at the end is imported which may cause
+redirection problem if you don&rsquo;t add. (Also you can&rsquo;t trigger this URL in the browser since /github-webhook provided by Jenkins
+for <strong>POST</strong> requests)</p>
+<p>Select <strong>application/json</strong> as content type and pick <strong>Just the push event</strong>. This configures when to call Jenkins if you want
+to configure detailed hooks, select <strong>Let me select individual events</strong> and then you can pick the events like Pull Requests, Pushes,
+Releases etc. to trigger calling your Jenkins endpoint.</p>
+<p>Finally, add the webhook.</p>
+<h3 id="9-push-changes-to-github-to-trigger-local-jenkins-pipeline">9. Push changes to Github to Trigger Local Jenkins Pipeline</h3>
+<p>Before triggering the job via push to Github, I had to trigger it once manually otherwise pipeline is not triggered. I could not
+find a description for it but I guess plugin checks the local difference of the repository with the changes it 
+received but it needs an initial pull of the repo to the local. So first build it manually once:</p>
+<p><img src="build_initially.png" alt="build manually"></p>
+<p>Now let&rsquo;s add a small change to the repo and push it. I changed my echo message from <strong>Hello World</strong> to <strong>Hello World from localhost</strong> and
+pushed it to my repo.</p>
+<p><img src="push_changes.png" alt="git changes"></p>
+<p>And 2nd build is automatically triggered!</p>
+<p><img src="build_triggered.png" alt="build triggered"></p>
+<p>And if you click on the build details (#2 in the above screen) and then click <strong>Console Output</strong> you can see the build
+details. Here are the important parts of log in my console;</p>
+<ul>
+<li>it shows that pipeline is started by a <strong>push</strong> to the repository</li>
+<li>with the commit message <strong>hello from localhost</strong></li>
+<li>and runs the Jenkinsfile in the repository by showing <strong>Hello World from localhost</strong></li>
+</ul>
+<pre><code>Started by GitHub push by cmlonder
+
+.... SOME MORE MESSAGE REGARDING GITHUB CHANGES ....
+
+Commit message: &quot;hello from localhost&quot;
+
+.... SOME MORE MESSAGE REGARDING GITHUB CHANGES ....
+
+Hello World from localhost
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
+</code></pre>
+<h3 id="10-summary">10. Summary</h3>
+<p>In this post, we made the integration of local Jenkins using Docker containers to the Github. Also, we saw how to create 
+a job, add a Github credential, configure your pipeline with Jenkinsfile, add a webhook from your repository to your Jenkins.</p>
+<p>You can find source code of this project in 
+<a href="https://github.com/cmlonder/github-integration-with-local-jenkins" target="_blank" rel="noopener">Github</a></p>
+<h3 id="11-resources">11. Resources</h3>
+<ul>
+<li>
+<a href="">https://www.jenkins.io/doc/book/pipeline/jenkinsfile/</a></li>
+</ul>
+
+    </div>
+
+    
+
+
+
+
+
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tag/github/">github</a>
+  
+  <a class="badge badge-light" href="/tag/jenkins/">jenkins</a>
+  
+</div>
+
+
+
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://twitter.com/intent/tweet?url=http://cemalonder.com/post/github-integration-with-local-jenkins/&amp;text=Github%20Integration%20With%20Local%20Jenkins" target="_blank" rel="noopener" class="share-btn-twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.facebook.com/sharer.php?u=http://cemalonder.com/post/github-integration-with-local-jenkins/&amp;t=Github%20Integration%20With%20Local%20Jenkins" target="_blank" rel="noopener" class="share-btn-facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="mailto:?subject=Github%20Integration%20With%20Local%20Jenkins&amp;body=http://cemalonder.com/post/github-integration-with-local-jenkins/" target="_blank" rel="noopener" class="share-btn-email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.linkedin.com/shareArticle?url=http://cemalonder.com/post/github-integration-with-local-jenkins/&amp;title=Github%20Integration%20With%20Local%20Jenkins" target="_blank" rel="noopener" class="share-btn-linkedin">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="whatsapp://send?text=Github%20Integration%20With%20Local%20Jenkins%20http://cemalonder.com/post/github-integration-with-local-jenkins/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://service.weibo.com/share/share.php?url=http://cemalonder.com/post/github-integration-with-local-jenkins/&amp;title=Github%20Integration%20With%20Local%20Jenkins" target="_blank" rel="noopener" class="share-btn-weibo">
+          <i class="fab fa-weibo"></i>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+
+
+
+
+
+  
+    
+    
+    
+      
+    
+    
+    
+    <div class="media author-card content-widget-hr">
+      
+        
+        <img class="avatar mr-3 avatar-circle" src="/author/cemal-onder/avatar_huc63091bfd94f6ac856b1fdc8fbb74eee_106618_270x270_fill_lanczos_center_2.png" alt="Cemal Önder">
+      
+
+      <div class="media-body">
+        <h5 class="card-title"><a href="http://cemalonder.com">Cemal Önder</a></h5>
+        <h6 class="card-subtitle">Software Developer</h6>
+        <p class="card-text">Love to learn &amp; share about Computer Science &amp; Software Development</p>
+        <ul class="network-icon" aria-hidden="true">
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://github.com/cmlonder" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://www.linkedin.com/in/cmlonder/" target="_blank" rel="noopener">
+        <i class="fab fa-linkedin"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+    <li>
+      <a href="mailto:cemalonder1@gmail.com" >
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="/files/cv.pdf" >
+        <i class="ai ai-cv"></i>
+      </a>
+    </li>
+  
+</ul>
+
+      </div>
+    </div>
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <div class="article-widget content-widget-hr">
+    <h3>Related</h3>
+    <ul>
+      
+      <li><a href="/post/go-sonar-integration-using-docker-part-1/">Go Sonar Integration Using Docker - Part 1</a></li>
+      
+      <li><a href="/post/spring-boot-kafka-tutorial/">Spring Boot Kafka Tutorial</a></li>
+      
+      <li><a href="/project/botcv-website-source/">BotCV Website Source</a></li>
+      
+    </ul>
+  </div>
+  
+
+
+
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/languages/r.min.js"></script>
+        
+      
+
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>const code_highlighting = true;</script>
+    
+
+    
+    
+    <script>const isSiteThemeDark = false;</script>
+    
+
+    
+    
+    
+    
+    
+    
+    <script>
+      const search_config = {"indexURI":"/index.json","minLength":1,"threshold":0.3};
+      const i18n = {"no_results":"No results found","placeholder":"Search...","results":"results found"};
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks",
+        'slides' : "Slides"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.66c553246b0f279a03be6e5597f72b52.js"></script>
+
+    
+
+
+
+
+
+
+  
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+  <p class="powered-by">
+    
+      <a href="/privacy/">Privacy Policy</a>
+    
+    
+       &middot; 
+      <a href="/terms/">Terms</a>
+    
+  </p>
+  
+
+  <p class="powered-by">
+    
+  </p>
+
+  
+  
+
+
+
+
+
+
+  <p class="powered-by">
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" class="back-to-top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

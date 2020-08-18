@@ -1,0 +1,750 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cemal Önder</title>
+    <link>http://cemalonder.com/author/cemal-onder/</link>
+      <atom:link href="http://cemalonder.com/author/cemal-onder/index.xml" rel="self" type="application/rss+xml" />
+    <description>Cemal Önder</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Fri, 17 Jul 2020 01:11:38 +0300</lastBuildDate>
+    <image>
+      <url>http://cemalonder.com/author/cemal-onder/avatar_huc63091bfd94f6ac856b1fdc8fbb74eee_106618_270x270_fill_lanczos_center_2.png</url>
+      <title>Cemal Önder</title>
+      <link>http://cemalonder.com/author/cemal-onder/</link>
+    </image>
+    
+    <item>
+      <title>Spring Boot Kafka Tutorial</title>
+      <link>http://cemalonder.com/post/spring-boot-kafka-tutorial/</link>
+      <pubDate>Fri, 17 Jul 2020 01:11:38 +0300</pubDate>
+      <guid>http://cemalonder.com/post/spring-boot-kafka-tutorial/</guid>
+      <description>&lt;h3 id=&#34;1-overview&#34;&gt;1. Overview&lt;/h3&gt;
+&lt;p&gt;Apache Kafka is a distributed streaming platform that is used to send data between applications in real-time. It is 
+good to have an overview of some Kafka terminology before going further;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Topic:&lt;/strong&gt; Messages are published to&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Producer:&lt;/strong&gt; An application who can publish its messages to a topic&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Consumer:&lt;/strong&gt; An application that can consume messages from its subscribed topic.
+Most simply, a producer writes messages to topics, and consumers can read messages from its subscribed topics. 
+This allows applications to communicate asynchronously and fulfill high payloads.&lt;/p&gt;
+&lt;p&gt;In this tutorial we are going to create a game announcement system;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Topic:&lt;/strong&gt; Games&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Producer:&lt;/strong&gt; /games/score/?name=${playerName} endpoint where we are going to call with curl request when a 
+A new score is made in our virtual football game.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Consumer:&lt;/strong&gt; There will be 2 consumers. Radio and TV. They will consume our message and use it their business logic. 
+This will show us how we can get the benefit of the publisher/subscriber system.&lt;/p&gt;
+&lt;h3 id=&#34;2-application-setup&#34;&gt;2. Application Setup&lt;/h3&gt;
+&lt;p&gt;We need to prepare our environment by running Apache Kafka and its dependency on ZooKeeper. Kafka provides a simple 
+ZooKeeper server for local purposes, but in production, it should be configured separately. Let&amp;rsquo;s stick with basics in our tutorial:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Download Apache Kafka 
+&lt;a href=&#34;https://kafka.apache.org/quickstart&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Untar it:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;tar -xzf kafka_2.12-2.5.0.tgz
+cd kafka_2.12-2.5.0
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;21-start-zookeeper-server&#34;&gt;2.1. Start ZooKeeper Server&lt;/h4&gt;
+&lt;p&gt;Kafka uses the ZooKeeper server to manage its topics. Start it:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Linux&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;./bin/zookeeper-server-start.sh config/zookeeper.properties
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Windows&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.\bin\windows\zookeeper-server-start.bat .\config\zookeeper.properties
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;22-start-kafka-server&#34;&gt;2.2. Start Kafka Server&lt;/h4&gt;
+&lt;p&gt;Start kafka server after ZooKeeper is up &amp;amp; ready:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Linux&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;./bin/kafka-server-start.sh config/server.properties
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Windows&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.\bin\windows\kafka-server-start.bat .\config\server.properties
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;23-create-a-topic&#34;&gt;2.3. Create a topic&lt;/h4&gt;
+&lt;p&gt;For simplicity, we are going to create a topic before our application is started. Create games topic with the following:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Linux&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.\bin \kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic scores
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Windows&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.\bin\windows\kafka-topics.bat --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic scores
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;24-list-topics&#34;&gt;2.4. List topics&lt;/h4&gt;
+&lt;p&gt;List topics in the Kafka, we will see scores topic is created.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Linux&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.\bin\kafka-topics.bat –list –bootstrap-server localhost:9092
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Windows&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;.\bin\windows\kafka-topics.bat --list --bootstrap-server localhost:9092
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;25-create-the-project&#34;&gt;2.5. Create the Project&lt;/h4&gt;
+&lt;p&gt;Now we can start creating our application. We need the following dependencies:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;spring-boot-starter:&lt;/strong&gt; Provides our core Spring libraries.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;spring-boot-starter-web:&lt;/strong&gt; We need it to provide a simple web server and REST operations&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;spring-kafka:&lt;/strong&gt; Wraps Kafka to abstract messaging operations&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;spring-boot-starter-test:&lt;/strong&gt; For core test libraries&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;spring-kafka-test:&lt;/strong&gt; provides testing utils for Kafka&lt;/p&gt;
+&lt;p&gt;Our final pom.xml:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;
+&amp;lt;project xmlns=&amp;quot;http://maven.apache.org/POM/4.0.0&amp;quot; xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot;
+       xsi:schemaLocation=&amp;quot;http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd&amp;quot;&amp;gt;
+   &amp;lt;modelVersion&amp;gt;4.0.0&amp;lt;/modelVersion&amp;gt;
+   &amp;lt;parent&amp;gt;
+      &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+      &amp;lt;artifactId&amp;gt;spring-boot-starter-parent&amp;lt;/artifactId&amp;gt;
+      &amp;lt;version&amp;gt;2.2.6.RELEASE&amp;lt;/version&amp;gt;
+      &amp;lt;relativePath/&amp;gt; &amp;lt;!-- lookup parent from repository --&amp;gt;
+   &amp;lt;/parent&amp;gt;
+   &amp;lt;groupId&amp;gt;com.cemalonder.tutorials&amp;lt;/groupId&amp;gt;
+   &amp;lt;artifactId&amp;gt;spring-boot-kafka-tutorial&amp;lt;/artifactId&amp;gt;
+   &amp;lt;version&amp;gt;0.0.1-SNAPSHOT&amp;lt;/version&amp;gt;
+   &amp;lt;name&amp;gt;spring-boot-kafka-tutorial&amp;lt;/name&amp;gt;
+   &amp;lt;description&amp;gt;Spring Boot kafka integration tutorial&amp;lt;/description&amp;gt;
+
+   &amp;lt;properties&amp;gt;
+      &amp;lt;java.version&amp;gt;1.8&amp;lt;/java.version&amp;gt;
+   &amp;lt;/properties&amp;gt;
+
+   &amp;lt;dependencies&amp;gt;
+      &amp;lt;dependency&amp;gt;
+         &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+         &amp;lt;artifactId&amp;gt;spring-boot-starter&amp;lt;/artifactId&amp;gt;
+      &amp;lt;/dependency&amp;gt;
+
+      &amp;lt;dependency&amp;gt;
+         &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+         &amp;lt;artifactId&amp;gt;spring-boot-starter-web&amp;lt;/artifactId&amp;gt;
+      &amp;lt;/dependency&amp;gt;
+
+      &amp;lt;dependency&amp;gt;
+         &amp;lt;groupId&amp;gt;org.springframework.kafka&amp;lt;/groupId&amp;gt;
+         &amp;lt;artifactId&amp;gt;spring-kafka&amp;lt;/artifactId&amp;gt;
+      &amp;lt;/dependency&amp;gt;
+
+      &amp;lt;dependency&amp;gt;
+         &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+         &amp;lt;artifactId&amp;gt;spring-boot-starter-test&amp;lt;/artifactId&amp;gt;
+         &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
+         &amp;lt;exclusions&amp;gt;
+            &amp;lt;exclusion&amp;gt;
+               &amp;lt;groupId&amp;gt;org.junit.vintage&amp;lt;/groupId&amp;gt;
+               &amp;lt;artifactId&amp;gt;junit-vintage-engine&amp;lt;/artifactId&amp;gt;
+            &amp;lt;/exclusion&amp;gt;
+         &amp;lt;/exclusions&amp;gt;
+      &amp;lt;/dependency&amp;gt;
+      &amp;lt;dependency&amp;gt;
+         &amp;lt;groupId&amp;gt;org.springframework.kafka&amp;lt;/groupId&amp;gt;
+         &amp;lt;artifactId&amp;gt;spring-kafka-test&amp;lt;/artifactId&amp;gt;
+         &amp;lt;scope&amp;gt;test&amp;lt;/scope&amp;gt;
+      &amp;lt;/dependency&amp;gt;
+   &amp;lt;/dependencies&amp;gt;
+
+   &amp;lt;build&amp;gt;
+      &amp;lt;plugins&amp;gt;
+         &amp;lt;plugin&amp;gt;
+            &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+            &amp;lt;artifactId&amp;gt;spring-boot-maven-plugin&amp;lt;/artifactId&amp;gt;
+         &amp;lt;/plugin&amp;gt;
+      &amp;lt;/plugins&amp;gt;
+   &amp;lt;/build&amp;gt;
+
+&amp;lt;/project&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Or you can also use Spring Initializr to generate above pom.xml quickly with the following selections:
+&lt;img src=&#34;spring-initialzr.png&#34; alt=&#34;spring initalizr&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;3-application-configuration&#34;&gt;3. Application Configuration&lt;/h3&gt;
+&lt;p&gt;We need to configure our application.yml/properties with the following:&lt;/p&gt;
+&lt;p&gt;By default, our Kafka server started on port 9092 when we run in our terminal. We will use the default port and 
+Serializer/Deserializer provided by Kafka. We configure our application to run on port 9000 and as the last step we 
+give a group-id as a default group-id but we will change it per Consumer in the following steps.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;server:
+  port: 9000
+
+spring:
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: group-id
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;4-create-a-controller&#34;&gt;4. Create a Controller&lt;/h3&gt;
+&lt;p&gt;We provide /games/score endpoint with the name request param. This controller then delegates its job to Scores class with incoming name.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;@RestController
+@RequestMapping(value = &amp;quot;/games&amp;quot;)
+public class GameController {
+
+  private final Scores scores;
+
+  @Autowired
+  public GameController(Scores scores) {
+    this.scores = scores;
+  }
+
+  @PostMapping(value = &amp;quot;/score&amp;quot;)
+  public void makeAnnouncement(@RequestParam(&amp;quot;name&amp;quot;) String name) {
+    this.scores.sendMessage(name);
+  }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;5-create-a-producer&#34;&gt;5. Create a Producer&lt;/h3&gt;
+&lt;p&gt;Create producer package and Scores file inside it as following:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;@Service
+public class Scores {
+
+  private final Logger logger = LoggerFactory.getLogger(Scores.class);
+  private static final String TOPIC = &amp;quot;scores&amp;quot;;
+
+  private final KafkaTemplate&amp;lt;String, String&amp;gt; kafkaTemplate;
+
+  @Autowired
+  public Scores(KafkaTemplate&amp;lt;String, String&amp;gt; kafkaTemplate) {
+    this.kafkaTemplate = kafkaTemplate;
+  }
+
+  public void sendMessage(String name) {
+    logger.info(&amp;quot;Publishing message to {} topic&amp;quot;, TOPIC);
+    this.kafkaTemplate.send(TOPIC, name + &amp;quot; is scored a new goal!&amp;quot;);
+  }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This class is annotated with Service annotation and it&amp;rsquo;s now inside Spring Context. We are using KafkaTemplate to 
+easily send messages to the given topic, since our class is already in Spring Context we can use Autowired annotation 
+in our constructor and inject KafkaTemplate to our class.  Then we are calling KafkaTemplate’s send method with the 
+score topic we already created and message for the topic.&lt;/p&gt;
+&lt;h3 id=&#34;6-create-consumers&#34;&gt;6. Create Consumers&lt;/h3&gt;
+&lt;p&gt;We will create two Consumers for the score topic. First, create consumers package and TvConsumer class in it as follows:&lt;/p&gt;
+&lt;h4 id=&#34;61-first-consumer-tv&#34;&gt;6.1. First Consumer: TV&lt;/h4&gt;
+&lt;p&gt;This class is annotated with Service annotation and its now inside Spring Context similar to the provider above. 
+We are using KafkaListener annotation provided by spring-kafka to listen given topic. It is listening to players&amp;rsquo; 
+topics with its unique groupId which is the tv in this case. By giving different groupId’s, multiple consumers can listen to the same topic. 
+In the end, the TvConsumer class logs a simple message that shows it is handled by the TV.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;@Service
+public class TvConsumer {
+
+  private final Logger logger = LoggerFactory.getLogger(TvConsumer.class);
+  private Integer score = 0;
+
+  @KafkaListener(topics = &amp;quot;scores&amp;quot;, groupId = &amp;quot;tv&amp;quot;)
+  public void consume(String message) {
+    logger.info(&amp;quot;{}. This is outstanding to watch on TV. Score now {} - 0!&amp;quot;, message, ++score);
+  }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;62-second-consumer-radio&#34;&gt;6.2. Second Consumer: Radio&lt;/h4&gt;
+&lt;p&gt;Similar to the TvConsumer, RadioConsumer listens to players&amp;rsquo; topic with its groupId and logs its special message.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;@Service
+public class RadioConsumer {
+
+  private final Logger logger = LoggerFactory.getLogger(RadioConsumer.class);
+  private Integer score = 0;
+
+  @KafkaListener(topics = &amp;quot;scores&amp;quot;, groupId = &amp;quot;radio&amp;quot;)
+  public void consume(String message) {
+    logger.info(&amp;quot;{}. Score is now {}-0 for the people who just turned on their Radios!&amp;quot;, message,
+        ++score);
+  }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;7-send-a-message-to-topic&#34;&gt;7. Send a Message To Topic&lt;/h3&gt;
+&lt;p&gt;Now let&amp;rsquo;s try to send a message to the topic using basic curl:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;curl -X POST localhost:9000/games/score?name=&amp;quot;Ronaldo&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And let&amp;rsquo;s see the results in our console:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;c.c.t.s.producer.Scores: Publishing message to scores topic
+c.c.t.s.consumer.RadioConsumer: Ronaldo is scored a new goal!. Score is now 1-0 for the people who 
+c.c.t.s.consumer.TvConsumer: Ronaldo is scored a new goal!. This is outstanding to watch on TV. Score now 1 - 0!
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;8-summary&#34;&gt;8. Summary&lt;/h3&gt;
+&lt;p&gt;In this post, we created kafka topic, send messages via a producer and retrieve them via multiple consumers from same
+topic using Spring Boot Kafka libraries.&lt;/p&gt;
+&lt;p&gt;You can find source code of this project in 
+&lt;a href=&#34;https://github.com/cmlonder/spring-boot-kafka-tutorial&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Github&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Github Integration With Local Jenkins</title>
+      <link>http://cemalonder.com/post/github-integration-with-local-jenkins/</link>
+      <pubDate>Thu, 16 Jul 2020 00:56:17 +0300</pubDate>
+      <guid>http://cemalonder.com/post/github-integration-with-local-jenkins/</guid>
+      <description>&lt;h3 id=&#34;1-overview&#34;&gt;1. Overview&lt;/h3&gt;
+&lt;p&gt;Sometimes it is very beneficial to have your own Jenkins:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;You have a ready Jenkins in your company but you are just learning Jenkins and you are pushing every little change
+to the repository which makes them dirty&lt;/li&gt;
+&lt;li&gt;You don&amp;rsquo;t have a ready Jenkins and want to give it a try&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Jenkins works with repositories which makes it a great tool for CI &amp;amp; CD. Communication between Jenkins and the repository
+manager is bi-directional, where the repository manager (Github in our case) pushes changes to Jenkins and Jenkins also fetches
+the repo from Github. So if you want to give it a try, Github must be able to access it. But it is not possible while you
+are using Jenkins locally since &lt;strong&gt;Github can not access your localhost:8080&lt;/strong&gt;. So you should install a Jenkins to a server
+you own where this is not always possible.&lt;/p&gt;
+&lt;p&gt;In this article, we are going to set up everything from scratch with a basic &amp;amp; quick way and &lt;strong&gt;we will integrate Github with
+locally running Jenkins.&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&#34;2-install-jenkins-with-docker&#34;&gt;2. Install Jenkins with Docker&lt;/h3&gt;
+&lt;p&gt;Docker is the easiest way to start using Jenkins. Here are the steps for downloading the docker image, starting a new container
+and setting up Jenkins:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.&lt;/strong&gt; Start local Jenkins by running following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -p 8080:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This creates a Jenkins on port 8080 with a volume &lt;strong&gt;jenkins_home&lt;/strong&gt; managed by docker. It is not suggested by Jenkins 
+to map the volume to the host, so we will keep the volume in this way.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2.&lt;/strong&gt; There is an initial administrator password in our terminal when we run above command:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;jenkins_startup.png&#34; alt=&#34;jenkins startup&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Copy this password then go to localhost:8080. Enter password here and continue:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;initial_admin.png&#34; alt=&#34;initial admin&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3.&lt;/strong&gt; Select install suggested plugins and wait for the installation process finish. This will install plugins like Git, SVN, etc.
+where we are going to use it in the next steps.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;install_plugins.png&#34; alt=&#34;install plugins&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4.&lt;/strong&gt; Optionally let&amp;rsquo;s also create an admin user to later use instead of initial admin.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;create_admin.png&#34; alt=&#34;create admin&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;5.&lt;/strong&gt; Finish the installation by applying the default URL since we will keep using localhost.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;installation_finish.png&#34; alt=&#34;finish installation&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;3-create-a-project-in-github&#34;&gt;3. Create a Project in Github&lt;/h3&gt;
+&lt;p&gt;You may already have a project, for the tutorial purpose let&amp;rsquo;s also create a new fresh project &lt;strong&gt;Github-integration-with-local-jenkins&lt;/strong&gt;
+which is located 
+&lt;a href=&#34;https://github.com/cmlonder/github-integration-with-local-jenkins&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;And let&amp;rsquo;s add a simple Jenkinsfile to the root of the project which simply echos Hello World&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;pipeline {
+    agent any
+
+    stages {
+        stage(&#39;Hello&#39;) {
+            steps {
+                echo &#39;Hello World&#39;
+            }
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;4-create-an-access-token-in-github&#34;&gt;4. Create an Access Token in Github&lt;/h3&gt;
+&lt;p&gt;Jenkins will try to reach Github for a bunch of operations where it will need some access token. Let&amp;rsquo;s create this token:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.&lt;/strong&gt; Click on your profile icon then select &lt;strong&gt;Settings&lt;/strong&gt; from the dropdown then select &lt;strong&gt;Developer Settings&lt;/strong&gt; from the
+left navigation panel&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;developer_settings.png&#34; alt=&#34;developer settings&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2.&lt;/strong&gt; Select &lt;strong&gt;Personal access tokens&lt;/strong&gt; and click on &lt;strong&gt;Generate new token&lt;/strong&gt;
+&lt;img src=&#34;create_access_token.png&#34; alt=&#34;create access token&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3.&lt;/strong&gt; Now we should select the scopes of our token. &lt;strong&gt;repo&lt;/strong&gt; and &lt;strong&gt;admin:repo_hook&lt;/strong&gt; scopes are enough for our operations.
+Select them, give them a note, and generate the token.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;local_jenkins_token.png&#34; alt=&#34;local_jenkins_token&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4.&lt;/strong&gt; Don&amp;rsquo;t forget to &lt;strong&gt;TAKE NOT&lt;/strong&gt; of this generated token since you will not able to see it again.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;access_token.png&#34; alt=&#34;access token&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Now we are ready to create a job in Jenkins. We will use this token while configuring Github in the Jenkins.&lt;/p&gt;
+&lt;h3 id=&#34;5-configure-github-server-in-jenkins&#34;&gt;5. Configure Github Server in Jenkins&lt;/h3&gt;
+&lt;p&gt;Before creating a new job, let&amp;rsquo;s add the token we generated in Github to our Jenkins.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.&lt;/strong&gt; Go to Jenkins Home and click on &lt;strong&gt;Manage Jenkins&lt;/strong&gt; then select &lt;strong&gt;Configure System&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;manage_jenkins.png&#34; alt=&#34;manage jenkins&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2.&lt;/strong&gt; Scroll down to the Github section. Click on &lt;strong&gt;Add Github Server&lt;/strong&gt; then give it a name like &lt;strong&gt;github api&lt;/strong&gt;. Check 
+&lt;strong&gt;Manage hooks&lt;/strong&gt;. We need to enter our credentials for Github. We will use the token we generated in the previous step.
+Click on &lt;strong&gt;Add&lt;/strong&gt; and select &lt;strong&gt;Jenkins&lt;/strong&gt;
+&lt;img src=&#34;add_github_server.png&#34; alt=&#34;add github server&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3.&lt;/strong&gt; Now you see a popup to add a credential. Select &lt;strong&gt;Global credentials&lt;/strong&gt; and &lt;strong&gt;Secret text&lt;/strong&gt;.
+Enter your generated access token which you created in the previous step from Github. Finally, enter a description (
+&lt;strong&gt;github access token&lt;/strong&gt; in this case) and add it.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;add_token.png&#34; alt=&#34;add token to jenkins&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4.&lt;/strong&gt; As the last step, select the credential you created (github access token) in the popup and click on &lt;strong&gt;Test connection&lt;/strong&gt;.
+A response should appear on the screen which shows remaining API limits for your user. See 
+
+&lt;a href=&#34;https://developer.github.com/apps/building-github-apps/understanding-rate-limits-for-github-apps/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt; for Github
+API rate limit information, but it is enough for learning purposes.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;save_github_server.png&#34; alt=&#34;save Github server&#34;&gt;&lt;/p&gt;
+&lt;p&gt;We successfully added a credential to access Github APIs. Let&amp;rsquo;s continue with creating a new job.&lt;/p&gt;
+&lt;h3 id=&#34;6-create-a-new-job&#34;&gt;6. Create a New Job&lt;/h3&gt;
+&lt;p&gt;We need to create a job in Jenkins by setting up our project URL and giving Github access so that Jenkins can fetch our
+project to build it within our pipeline. Let&amp;rsquo;s set it up step by step&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.&lt;/strong&gt; Click on create a new item
+&lt;img src=&#34;new_item.png&#34; alt=&#34;new item&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2.&lt;/strong&gt; Select &lt;strong&gt;Pipeline&lt;/strong&gt; and give it a name
+
+&lt;a href=&#34;https://github.com/cmlonder/go-dockerized-coverage&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;new_pipeline.png&#34; alt=&#34;new job&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3.&lt;/strong&gt; Now we should configure our job. Click (or scroll) to &lt;strong&gt;Build Triggers&lt;/strong&gt; section and check &lt;strong&gt;Github hook trigger for GITScm polling&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;configure_webhook.png&#34; alt=&#34;configure webhook&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4.&lt;/strong&gt; Click on &lt;strong&gt;Pipeline&lt;/strong&gt; and select &lt;strong&gt;Pipeline script from SCM&lt;/strong&gt; from Definition dropdown. This configures Jenkins 
+job that we will use instructions from our project&amp;rsquo;s  Jenkinsfile to run the pipeline. Enter your
+&lt;em&gt;&amp;hellip;git&lt;/em&gt; repository URL.&lt;/p&gt;
+&lt;h3 id=&#34;7-expose-your-localhost-with-ngrok&#34;&gt;7. Expose Your Localhost with NGROK&lt;/h3&gt;
+&lt;p&gt;As mentioned at the beginning of the article, we need a way to Github to communicate with our local running Jenkins. There is a way
+for it; exposing your local with a tunnel to the web. &lt;strong&gt;NGROK&lt;/strong&gt; is the easiest way for this which makes it available with
+a simple command. But it &lt;strong&gt;SHOULD NOT&lt;/strong&gt; be used for production purposes.&lt;/p&gt;
+&lt;p&gt;First download ngrok for your operating system 
+&lt;a href=&#34;https://ngrok.com/download&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Then type the following command in your terminal (if you did not add ngrok to PATH, cd into your ngrok download directory);&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ngrok http 8080
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This exposes your &lt;strong&gt;8080&lt;/strong&gt; which is the port Jenkins is running on to the web via ngrok. After you type it, you should see
+the exposed URL like following in your terminal:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;ngrok.png&#34; alt=&#34;ngrok&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Copy the Http forwarding URL and paste it to your browser, you will be redirected to your local Jenkins server. We are ready
+to go to the next step, configuring Github for webhooks with Jenkins.&lt;/p&gt;
+&lt;h3 id=&#34;8-configure-webhook-url-for-your-project-in-github&#34;&gt;8. Configure Webhook URL for your Project in Github&lt;/h3&gt;
+&lt;p&gt;Go to your project page and click on &lt;strong&gt;Settings&lt;/strong&gt; tab. Then click &lt;strong&gt;Webhooks&lt;/strong&gt; from the left navigation panel and
+click on &lt;strong&gt;Add webhook&lt;/strong&gt;. Now you should see the following screen:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;add_webhook.png&#34; alt=&#34;add webhook&#34;&gt;&lt;/p&gt;
+&lt;p&gt;For the Payload URL you should add your ngrok URL from previous step + &lt;strong&gt;/github-webhook/&lt;/strong&gt; which 
+will be ${YOUR_NGROK_URL}&lt;strong&gt;/github-webhook/&lt;/strong&gt;. So my ngrok URL is: &lt;a href=&#34;http://d9cdfa47e311.ngrok.io&#34;&gt;http://d9cdfa47e311.ngrok.io&lt;/a&gt; then my
+Payload URL is &lt;strong&gt;&lt;a href=&#34;http://d9cdfa47e311.ngrok.io/github-webhook/&#34;&gt;http://d9cdfa47e311.ngrok.io/github-webhook/&lt;/a&gt;&lt;/strong&gt; Trailing Slash &lt;strong&gt;/&lt;/strong&gt; at the end is imported which may cause
+redirection problem if you don&amp;rsquo;t add. (Also you can&amp;rsquo;t trigger this URL in the browser since /github-webhook provided by Jenkins
+for &lt;strong&gt;POST&lt;/strong&gt; requests)&lt;/p&gt;
+&lt;p&gt;Select &lt;strong&gt;application/json&lt;/strong&gt; as content type and pick &lt;strong&gt;Just the push event&lt;/strong&gt;. This configures when to call Jenkins if you want
+to configure detailed hooks, select &lt;strong&gt;Let me select individual events&lt;/strong&gt; and then you can pick the events like Pull Requests, Pushes,
+Releases etc. to trigger calling your Jenkins endpoint.&lt;/p&gt;
+&lt;p&gt;Finally, add the webhook.&lt;/p&gt;
+&lt;h3 id=&#34;9-push-changes-to-github-to-trigger-local-jenkins-pipeline&#34;&gt;9. Push changes to Github to Trigger Local Jenkins Pipeline&lt;/h3&gt;
+&lt;p&gt;Before triggering the job via push to Github, I had to trigger it once manually otherwise pipeline is not triggered. I could not
+find a description for it but I guess plugin checks the local difference of the repository with the changes it 
+received but it needs an initial pull of the repo to the local. So first build it manually once:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;build_initially.png&#34; alt=&#34;build manually&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Now let&amp;rsquo;s add a small change to the repo and push it. I changed my echo message from &lt;strong&gt;Hello World&lt;/strong&gt; to &lt;strong&gt;Hello World from localhost&lt;/strong&gt; and
+pushed it to my repo.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;push_changes.png&#34; alt=&#34;git changes&#34;&gt;&lt;/p&gt;
+&lt;p&gt;And 2nd build is automatically triggered!&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;build_triggered.png&#34; alt=&#34;build triggered&#34;&gt;&lt;/p&gt;
+&lt;p&gt;And if you click on the build details (#2 in the above screen) and then click &lt;strong&gt;Console Output&lt;/strong&gt; you can see the build
+details. Here are the important parts of log in my console;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;it shows that pipeline is started by a &lt;strong&gt;push&lt;/strong&gt; to the repository&lt;/li&gt;
+&lt;li&gt;with the commit message &lt;strong&gt;hello from localhost&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;and runs the Jenkinsfile in the repository by showing &lt;strong&gt;Hello World from localhost&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;Started by GitHub push by cmlonder
+
+.... SOME MORE MESSAGE REGARDING GITHUB CHANGES ....
+
+Commit message: &amp;quot;hello from localhost&amp;quot;
+
+.... SOME MORE MESSAGE REGARDING GITHUB CHANGES ....
+
+Hello World from localhost
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;10-summary&#34;&gt;10. Summary&lt;/h3&gt;
+&lt;p&gt;In this post, we made the integration of local Jenkins using Docker containers to the Github. Also, we saw how to create 
+a job, add a Github credential, configure your pipeline with Jenkinsfile, add a webhook from your repository to your Jenkins.&lt;/p&gt;
+&lt;p&gt;You can find source code of this project in 
+&lt;a href=&#34;https://github.com/cmlonder/github-integration-with-local-jenkins&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Github&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;11-resources&#34;&gt;11. Resources&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;&#34;&gt;https://www.jenkins.io/doc/book/pipeline/jenkinsfile/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Go Sonar Integration Using Docker - Part 1</title>
+      <link>http://cemalonder.com/post/go-sonar-integration-using-docker-part-1/</link>
+      <pubDate>Sun, 12 Jul 2020 01:28:56 +0300</pubDate>
+      <guid>http://cemalonder.com/post/go-sonar-integration-using-docker-part-1/</guid>
+      <description>&lt;h3 id=&#34;overview&#34;&gt;Overview&lt;/h3&gt;
+&lt;p&gt;In this series, we are going to integrate a Go project with Sonar using Docker.
+
+&lt;a href=&#34;http://cemalonder.com/post/go-sonar-integration-using-docker-part-1&#34;&gt;Part 1&lt;/a&gt; will be about creating a go application, writing unit tests, 
+and generating code coverage then sending this report to SonarQube.
+
+&lt;a href=&#34;&#34;&gt;Part 2 - TBD&lt;/a&gt; will be about using Sonar to fail pipeline based on the Quality report.&lt;/p&gt;
+&lt;h3 id=&#34;1-create-a-simple-todo-app&#34;&gt;1. Create a Simple Todo App&lt;/h3&gt;
+&lt;p&gt;Let&amp;rsquo;s first create an empty project and initialize go modules.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mkdir go-dockerized-coverage
+cd go-dockerized-coverage
+go mod init cemalonder.com/go/todo
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Create a todo folder and todo.go file&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mkdir todo
+touch todo.go
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And write a simple Todo App with 2 functions; &lt;strong&gt;Add&lt;/strong&gt; and &lt;strong&gt;Complete&lt;/strong&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;// Package todo provides a simple todo application
+package todo
+
+import &amp;quot;errors&amp;quot;
+
+// Todo representation of todo with id, title and completed status
+type Todo struct {
+   Id       int
+   Title    string
+   Completed bool
+}
+
+// TodoApp holds todo list and id counter
+type TodoApp struct {
+   todos map[int]Todo
+   id int
+}
+
+// CreateTodoApp creates a new TodoApp by initializing todo list and id counter
+func CreateTodoApp() TodoApp {
+   todoApp := TodoApp{}
+   todoApp.todos = make(map[int]Todo)
+   todoApp.id = 0
+   return todoApp
+}
+
+// Add adds a new todo with given title and returns created todo with a new id
+func (app *TodoApp) Add(title string) Todo {
+   app.id = app.id + 1
+   app.todos[app.id] = Todo{app.id, title, false}
+   return app.todos[app.id]
+}
+
+// Complete completes a todo with given id and
+// returns todo not found exception if todo with given id is not found
+func (app *TodoApp) Complete(id int) error {
+   if todo, ok := app.todos[id]; ok {
+      todo.Completed = true
+      app.todos[id] = todo
+      return nil
+   } else {
+      return errors.New(&amp;quot;todo not found&amp;quot;)
+   }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;2-write-unit-tests&#34;&gt;2. Write Unit Tests&lt;/h3&gt;
+&lt;p&gt;Now let&amp;rsquo;s create some unit tests for our Todo App. My Complete function contains some business logic which I can write
+unit tests. I will consider business cases first, then implement them;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;When I complete a todo which exists, I expect it&amp;rsquo;s completed state is true&lt;/li&gt;
+&lt;li&gt;When I complete a todo which does not exist, I expect an error&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;package todo_test
+
+import (
+   &amp;quot;testing&amp;quot;
+)
+
+func TestCompleteForFoundTodo(t *testing.T) {
+   app := CreateTodoApp()
+   todo := app.Add(&amp;quot;Wake up early&amp;quot;)
+   if todo.Completed {
+      t.Error(&amp;quot;Expected completed is false, but it is true&amp;quot;)
+   }
+
+   err := app.Complete(todo.Id)
+
+   if err != nil {
+      t.Errorf(&amp;quot;Expected error is nil, but it is %v&amp;quot;, err)
+   }
+
+   if todo.Completed {
+      t.Error(&amp;quot;Expected completed is true, but it is false&amp;quot;)
+   }
+}
+
+func TestCompleteForNotFoundTodo(t *testing.T) {
+   app := CreateTodoApp()
+   err := app.Complete(1)
+   if err == nil {
+      t.Errorf(&amp;quot;Expected error is not nil, but it is %v&amp;quot;, err)
+   }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I&amp;rsquo;m following some testing conventions above which starts with TestXxx(*testing.T). And also my package
+name is todo_test. Since this post is about integrating Go with Sonar I will let keep them for another post, let&amp;rsquo;s
+continue with generating code coverage.&lt;/p&gt;
+&lt;h3 id=&#34;3-generate-code-coverage&#34;&gt;3. Generate Code Coverage&lt;/h3&gt;
+&lt;p&gt;Let&amp;rsquo;s run and generate coverage for our project:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;go test ./... -v -coverprofile=coverage.out -covermode=count -coverpkg=./...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And if summarize what is above command and its flag is doing:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;go test ./&amp;hellip;&lt;/strong&gt; = running all the tests in current and all sub-folders&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;-v&lt;/strong&gt; = print full output&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;-coverprofile=coverage.out&lt;/strong&gt; = write coverage to the given file, here we write to coverage.out&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;-covermode=count&lt;/strong&gt; = Sets the mode for coverage analyses, here we set to count which shows how many times statements are run&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;-coverpkg=./&amp;hellip;&lt;/strong&gt; = apply coverage for all matching pattern, here we applied current and all sub-folders&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For the detailed list of all flags for go test command, see 
+&lt;a href=&#34;https://golang.org/pkg/cmd/go/internal/test/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Now we have a coverage.out generated in the root of the project content like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; mode: count
+  cemalonder.com/go/todo/main.go:3.14,4.2 0 0
+  cemalonder.com/go/todo/todo/todo.go:20.30,25.2 4 2
+  cemalonder.com/go/todo/todo/todo.go:28.44,32.2 3 1
+  cemalonder.com/go/todo/todo/todo.go:36.44,37.35 1 2
+  cemalonder.com/go/todo/todo/todo.go:37.35,41.3 3 1
+  cemalonder.com/go/todo/todo/todo.go:41.8,43.3 1 1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The next step is sending this coverage to Sonar so we can visualize it.&lt;/p&gt;
+&lt;h3 id=&#34;4-start-local-sonarqube&#34;&gt;4. Start Local SonarQube&lt;/h3&gt;
+&lt;p&gt;Even you will send your reports to a Sonar instance which you have in your company&amp;rsquo;s server, let&amp;rsquo;s try everything first
+locally. It will be pretty easy using Docker.&lt;/p&gt;
+&lt;p&gt;Start a new SonarQube container:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run --rm -p 9000:9000 sonarqube
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If we summarize above command;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Installs &lt;strong&gt;sonarqube&lt;/strong&gt; image if it does not exist locally&lt;/li&gt;
+&lt;li&gt;Creates a container from this image&lt;/li&gt;
+&lt;li&gt;Starts this container&lt;/li&gt;
+&lt;li&gt;Forwards internal 9000 port of docker to host (localhost in this case) so you can access it via [localhost:9000]&lt;/li&gt;
+&lt;li&gt;Removes container (&amp;ndash;rm) when it is stopped so you don&amp;rsquo;t run out of space (you still have the image)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Now we have a locally running sonarqube with no persistency (in-memory), so you will lose your pushed reports when you
+restart your container but it is okay for our case since we want to test our reports.&lt;/p&gt;
+&lt;p&gt;If you visit 
+&lt;a href=&#34;&#34;&gt;localhost:9000&lt;/a&gt; in your browser you will see local SonarQube instance with 0 projects.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;sonarqube.png&#34; alt=&#34;sonarqube&#34;&gt;&lt;/p&gt;
+&lt;p&gt;We need to push our project to SonarQube. Let&amp;rsquo;s continue with the next step.&lt;/p&gt;
+&lt;h3 id=&#34;5-configure-sonar-in-project&#34;&gt;5. Configure Sonar in Project&lt;/h3&gt;
+&lt;p&gt;We need some configuration in our project before we push it to the SonarQube. In the next step, we will be using SonarScanner
+which requires sonar-project.properties configured in the project. By default, it should be located at the root of the project.
+Let&amp;rsquo;s create &lt;strong&gt;sonar-project.properties&lt;/strong&gt; in the root of the project and&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;touch sonar-project.properties
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And its content is:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sonar.language=go
+# This should be unique in SonarQube
+sonar.projectKey=simple-todo-app
+sonar.projectName=Simple Todo Application
+sonar.go.coverage.reportPaths=coverage.out
+sonar.exclusions=**/*_test.go
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And if we summarize the properties used above:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;sonar.language&lt;/strong&gt; = we are setting our language but SonarQube also capable of guessing it&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;sonar.projectKey&lt;/strong&gt; = this should be unique in your SonarQube instance&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;sonar.projectName&lt;/strong&gt; = this will be shown in the UI as a name of our project&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;sonar.go.coverage.reportPaths&lt;/strong&gt; = we show our &lt;strong&gt;coverage.out&lt;/strong&gt; which we generated in 
+&lt;a href=&#34;#2-write-unit-tests&#34;&gt;write unit tests&lt;/a&gt; step&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;sonar.exclusions&lt;/strong&gt; = we are excluding _test.go files since we don&amp;rsquo;t want to get coverage of tests itself
+All of the properties can be found 
+&lt;a href=&#34;https://docs.sonarqube.org/latest/analysis/analysis-parameters/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We have configured our project. The last step is pushing these to the SonarQube instance.&lt;/p&gt;
+&lt;h3 id=&#34;6-send-coverage-report-to-sonarqube-using-sonarscanner&#34;&gt;6. Send Coverage Report to SonarQube using SonarScanner&lt;/h3&gt;
+&lt;p&gt;
+&lt;a href=&#34;https://github.com/SonarSource/sonar-scanner-cli&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;SonarScanner&lt;/a&gt; is a tool used to run code analysis on SonarQube instance.
+To use this we should install it locally and run against our project which has code coverage generated and sonar-project.properties
+configured. But instead of installing locally, I would like to do this step also with Docker since SonarQube officially provides a 
+&lt;a href=&#34;https://hub.docker.com/r/sonarsource/sonar-scanner-cli&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;docker image&lt;/a&gt; for this.&lt;/p&gt;
+&lt;p&gt;Before running the sonar-scanner-cli docker command you should get your local IP since we will need it in the next step.
+For this type &lt;code&gt;ipconfig&lt;/code&gt; if you are working in Windows or &lt;code&gt;ifconfig&lt;/code&gt; if you are in a Linux based Operating System. Then
+take note of your &lt;strong&gt;IPv4 Adress&lt;/strong&gt; for the valid Adapter, in my case I&amp;rsquo;m working via Wireless so I take note of my 
+&lt;strong&gt;Wireless Lan adapter Wi-Fi&lt;/strong&gt; which is 192.168.0.11 as follows&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;ip-address.png&#34; alt=&#34;ip address&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Now run following command in the shell (run it in PowerShell if you are in windows otherwise ${PWD} does not work)&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; docker run --rm -e SONAR_HOST_URL=http://192.168.0.11:9000 -v ${PWD}:/usr/src sonarsource/sonar-scanner-cli
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And if we summarize above command:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Installs &lt;strong&gt;sonarsource/sonar-scanner-cli&lt;/strong&gt; image if it does not exist locally&lt;/li&gt;
+&lt;li&gt;Creates a container from this image&lt;/li&gt;
+&lt;li&gt;Starts this container&lt;/li&gt;
+&lt;li&gt;Sets &lt;strong&gt;SONAR_HOST_URL&lt;/strong&gt; environment variable to show where SonarQube runs&lt;/li&gt;
+&lt;li&gt;Creates a volume from &lt;strong&gt;/usr/src&lt;/strong&gt; to your local (${PWD} or give your absolute path like /c/yourUser/yourProject) so
+sonar-scanner-cli can use your local project and its properties (sonar-project.properties)&lt;/li&gt;
+&lt;li&gt;Removes container (&amp;ndash;rm) when it is stopped so you don&amp;rsquo;t run out of space (you still have the image)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In your terminal you should see an &lt;strong&gt;EXECUTION SUCCESS&lt;/strong&gt; message with a log similar to this:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;...More logs...
+INFO: Analysis report generated in 134ms, dir size=80 KB
+INFO: Analysis report compressed in 681ms, zip size=12 KB
+INFO: Analysis report uploaded in 260ms
+INFO: ANALYSIS SUCCESSFUL, you can browse http://192.168.0.11:9000/dashboard?id=simple-todo-app
+INFO: Note that you will be able to access the updated dashboard once the server has processed the submitted analysis report
+INFO: More about the report processing at http://192.168.0.11:9000/api/ce/task?id=AXNFIP_bMJij3EBEF7zK
+INFO: Analysis total time: 5.375 s
+INFO: ------------------------------------------------------------------------
+INFO: EXECUTION SUCCESS
+INFO: ------------------------------------------------------------------------
+INFO: Total time: 12.923s
+INFO: Final Memory: 13M/47M
+INFO: ------------------------------------------------------------------------
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;NOTE:&lt;/strong&gt; You can not use 
+&lt;a href=&#34;&#34;&gt;http://localhost:9000&lt;/a&gt; instead of 
+&lt;a href=&#34;&#34;&gt;http://192.168.0.11:9000&lt;/a&gt; since sonar-scanner-cli Docker container runs
+on its host and &lt;strong&gt;localhost&lt;/strong&gt; for that container is not same address with localhost of yours (at least in Windows, Mac&amp;rsquo;s 
+docker daemon may be editing etc/hosts files so users in Mac MAY be using localhost even they are working in Docker)&lt;/p&gt;
+&lt;p&gt;Now if you visit 
+&lt;a href=&#34;&#34;&gt;http://localhost:9000&lt;/a&gt; again, you will see there is 1 project now. Click on that and here is our report:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;sonar-analyse.png&#34; alt=&#34;sonar analyse&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Since Sonar has default Quality Gates configured, I&amp;rsquo;m now passing all of the scores and we have &lt;strong&gt;Passed&lt;/strong&gt; status.&lt;/p&gt;
+&lt;h3 id=&#34;summary&#34;&gt;Summary&lt;/h3&gt;
+&lt;p&gt;In this post, we write a simple Go project, generate coverage report, configure SonarScanner, and analyze our project in Sonar.
+The 
+&lt;a href=&#34;&#34;&gt;next part - TBD&lt;/a&gt; will be about integrating this project to Jenkins and reject our pipeline based on the project quality report.&lt;/p&gt;
+&lt;p&gt;You can find source code of this project in 
+&lt;a href=&#34;https://github.com/cmlonder/go-dockerized-coverage&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Github&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;resources&#34;&gt;Resources&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;&#34;&gt;https://docs.sonarqube.org/latest&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;&#34;&gt;https://blog.golang.org/cover&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>An example preprint / working paper</title>
+      <link>http://cemalonder.com/publication/preprint/</link>
+      <pubDate>Sun, 07 Apr 2019 00:00:00 +0000</pubDate>
+      <guid>http://cemalonder.com/publication/preprint/</guid>
+      <description>&lt;div class=&#34;alert alert-note&#34;&gt;
+  &lt;div&gt;
+    Click the &lt;em&gt;Slides&lt;/em&gt; button above to demo Academic&amp;rsquo;s Markdown slides feature.
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Supplementary notes can be added here, including 
+&lt;a href=&#34;https://sourcethemes.com/academic/docs/writing-markdown-latex/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;code and math&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>An example journal article</title>
+      <link>http://cemalonder.com/publication/journal-article/</link>
+      <pubDate>Tue, 01 Sep 2015 00:00:00 +0000</pubDate>
+      <guid>http://cemalonder.com/publication/journal-article/</guid>
+      <description>&lt;div class=&#34;alert alert-note&#34;&gt;
+  &lt;div&gt;
+    Click the &lt;em&gt;Cite&lt;/em&gt; button above to demo the feature to enable visitors to import publication metadata into their reference management software.
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;alert alert-note&#34;&gt;
+  &lt;div&gt;
+    Click the &lt;em&gt;Slides&lt;/em&gt; button above to demo Academic&amp;rsquo;s Markdown slides feature.
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Supplementary notes can be added here, including 
+&lt;a href=&#34;https://sourcethemes.com/academic/docs/writing-markdown-latex/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;code and math&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>An example conference paper</title>
+      <link>http://cemalonder.com/publication/conference-paper/</link>
+      <pubDate>Mon, 01 Jul 2013 00:00:00 +0000</pubDate>
+      <guid>http://cemalonder.com/publication/conference-paper/</guid>
+      <description>&lt;div class=&#34;alert alert-note&#34;&gt;
+  &lt;div&gt;
+    Click the &lt;em&gt;Cite&lt;/em&gt; button above to demo the feature to enable visitors to import publication metadata into their reference management software.
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;alert alert-note&#34;&gt;
+  &lt;div&gt;
+    Click the &lt;em&gt;Slides&lt;/em&gt; button above to demo Academic&amp;rsquo;s Markdown slides feature.
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Supplementary notes can be added here, including 
+&lt;a href=&#34;https://sourcethemes.com/academic/docs/writing-markdown-latex/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;code and math&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
