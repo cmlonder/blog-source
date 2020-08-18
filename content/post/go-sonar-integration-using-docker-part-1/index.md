@@ -3,10 +3,13 @@
 
 title: "Go Sonar Integration Using Docker - Part 1"
 subtitle: ""
-summary: ""
+summary: "In this series, we are going to integrate a Go project with Sonar using Docker.
+          [Part 1](/post/go-sonar-integration-using-docker-part-1) will be about creating a go application, writing unit tests, 
+          and generating code coverage then sending this report to SonarQube.
+          [Part 2 - TBD]() will be about using Sonar to fail pipeline based on the Quality report."
 authors: ["admin"]
 tags: ["sonar", "go", "docker"]
-categories: ["code quality", "continuous integration"]
+categories: ["integration", "code quality", "continuous integration"]
 date: 2020-07-12T01:28:56+03:00
 lastmod: 2020-07-12T01:28:56+03:00
 featured: true
@@ -29,9 +32,10 @@ projects: []
 ---
 
 ### Overview
-In this series, I'm going to integrate a Go project with Sonar using Docker.
-[Part 1](/post/go-sonar-integration-using-containers-part-1) will be about creating a go application, writing unit tests, and generating code coverage then sending this
-report to SonarQube.[Part 2 - TBD]() will be about using Sonar to fail pipeline based on the Quality report.
+In this series, we are going to integrate a Go project with Sonar using Docker.
+[Part 1](/post/go-sonar-integration-using-docker-part-1) will be about creating a go application, writing unit tests, 
+and generating code coverage then sending this report to SonarQube.
+[Part 2 - TBD]() will be about using Sonar to fail pipeline based on the Quality report.
 
 ### 1. Create a Simple Todo App
 Let's first create an empty project and initialize go modules.
