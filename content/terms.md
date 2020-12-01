@@ -16,7 +16,7 @@ header:
 
 **1.1** These terms and conditions constitute a legally binding agreement between you or an individual
 On behalf of the entity (**you**) and **CemalÖnder** (us, us)** located in **Istanbul**, Turkey, involving your access and use of the following
-** CemalÖnder** [http://cemalonder.com]() website and any related applications (** Site **).
+** CemalÖnder** [http://cmlonder.com]() website and any related applications (** Site **).
 
 The site provides the following services: **programming, engineering (service) shared knowledge**. you agree
 By accessing the website and/or service, you have read, understood and agreed to accept all

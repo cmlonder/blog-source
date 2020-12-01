@@ -42,7 +42,7 @@ Let's first create an empty project and initialize go modules.
 ```
 mkdir go-dockerized-coverage
 cd go-dockerized-coverage
-go mod init cemalonder.com/go/todo
+go mod init cmlonder.com/go/todo
 ```
 
 Create a todo folder and todo.go file
@@ -164,12 +164,12 @@ For the detailed list of all flags for go test command, see [here](https://golan
 Now we have a coverage.out generated in the root of the project content like this:
 ```
  mode: count
-  cemalonder.com/go/todo/main.go:3.14,4.2 0 0
-  cemalonder.com/go/todo/todo/todo.go:20.30,25.2 4 2
-  cemalonder.com/go/todo/todo/todo.go:28.44,32.2 3 1
-  cemalonder.com/go/todo/todo/todo.go:36.44,37.35 1 2
-  cemalonder.com/go/todo/todo/todo.go:37.35,41.3 3 1
-  cemalonder.com/go/todo/todo/todo.go:41.8,43.3 1 1
+  cmlonder.com/go/todo/main.go:3.14,4.2 0 0
+  cmlonder.com/go/todo/todo/todo.go:20.30,25.2 4 2
+  cmlonder.com/go/todo/todo/todo.go:28.44,32.2 3 1
+  cmlonder.com/go/todo/todo/todo.go:36.44,37.35 1 2
+  cmlonder.com/go/todo/todo/todo.go:37.35,41.3 3 1
+  cmlonder.com/go/todo/todo/todo.go:41.8,43.3 1 1
 ```
 
 The next step is sending this coverage to Sonar so we can visualize it.
