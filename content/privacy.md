@@ -16,7 +16,7 @@ Thanks for being part of our community at Cemal Önder. We are committed to prot
 your privacy. If you have any questions or concerns about this privacy statement or our practices regarding your 
 personal information, Please contact us via  [cemalonder1@gmail.com](mailto:cemalonder1@gmail.com).
 
-When you visit our website http://cmlonder.com (the **"Website"**), more broadly, Use any of our services
+When you visit our website https://www.cmlonder.com (the **"Website"**), more broadly, Use any of our services
 (**"Services"** including the Website),  we thank you for trusting us With your personal information. 
 We take your privacy very seriously. In this privacy statement, we try to explain to you what information we 
 collect in the clearest way, How do we use it and what rights do you have for it. We hope you spend some time reading 
@@ -383,4 +383,4 @@ If you have questions or comments about this notice, you may email us at [cemalo
 ## HOW CAN YOU REVIEW, UPDATE, OR DELETE THE DATA WE COLLECT FROM YOU?
 Depending on the applicable laws in your country, you may have the right to request access to our personal information
 Collect from you, change this information or delete it in some cases. Request to view, update or delete
-For your personal information, please visit: http://cmlonder.com. We will respond to your request within 30 days.
+For your personal information, please visit: https://www.cmlonder.com. We will respond to your request within 30 days.
