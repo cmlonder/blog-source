@@ -142,7 +142,7 @@ Our final pom.xml:
       <version>2.2.6.RELEASE</version>
       <relativePath/> <!-- lookup parent from repository -->
    </parent>
-   <groupId>com.cemalonder.tutorials</groupId>
+   <groupId>com.cmlonder.tutorials</groupId>
    <artifactId>spring-boot-kafka-tutorial</artifactId>
    <version>0.0.1-SNAPSHOT</version>
    <name>spring-boot-kafka-tutorial</name>
