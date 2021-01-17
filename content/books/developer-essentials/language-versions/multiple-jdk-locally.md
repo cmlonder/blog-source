@@ -1,8 +1,10 @@
 ---
 title: Multiple JDK Locally
-summary: Learn how to install and manage multiple jdk versions in mac os x
+summary: Learn how to install and manage multiple jdk versions in Mac OS
 type: book
 weight: 10
+date: "2021-01-17T00:00:00Z"
+lastMod: "2021-01-17T00:00:00Z"
 ---
 In this tutorial we are going to install and configure Jenv to manage multiple JDK versions in Mac OS. 
 
