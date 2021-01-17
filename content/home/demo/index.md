@@ -27,6 +27,6 @@ headless: true  # This file represents a page section.
 ---
 BotCV aims to solve testing problem of not native elements across mobile platforms.
 
-{{% alert note %}}
+{{% callout note %}}
 This project still in progress
-{{% /alert %}}
+{{% /callout %}}

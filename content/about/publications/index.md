@@ -23,6 +23,6 @@ title: Recent Publications
 weight: 90
 widget: pages
 ---
-{{% alert note %}}
+{{% callout note %}}
 Quickly discover relevant content by [filtering publications]({{< ref "/publication/_index.md" >}}).
-{{% /alert %}}
+{{% /callout %}}
