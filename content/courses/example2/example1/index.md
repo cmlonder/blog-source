@@ -2,7 +2,7 @@
 # Course title, summary, and position.
 linktitle: An Example Course
 summary: Learn how to use Academic's docs layout for publishing online courses, software documentation, and tutorials.
-weight: 3
+weight: 2
 
 # Page metadata.
 title: Overview
@@ -17,7 +17,7 @@ type: docs  # Do not modify.
 # - weight: Position of link in menu.
 menu:
     example:
-        name: Hey2
+        name: Hey3
         weight: 3
 ---
-hey 2
+hey3
