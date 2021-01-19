@@ -5,13 +5,12 @@ title: "Github Integration With Local Jenkins"
 subtitle: ""
 summary: "In this article, we are going to setup local Jenkins and integrate it with Github Repository which will trigger
 local Jenkins when we push some changes."
+type: book
 authors: ["admin"]
 tags: ["jenkins", "github"]
 categories: ["integration", "continuous integration"]
 date: 2020-07-16T00:56:17+03:00
 lastmod: 2020-07-16T00:56:17+03:00
-featured: false
-draft: false
 
 # Featured image
 # To use, add an image named `featured.jpg/png` to your page's folder.

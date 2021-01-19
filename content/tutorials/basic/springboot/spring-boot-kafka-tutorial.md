@@ -1,19 +1,17 @@
 ---
 # Documentation: https://sourcethemes.com/academic/docs/managing-content/
 
-title: "Spring Boot Kafka Tutorial"
+title: "Kafka Integration"
 subtitle: ""
 summary: "Apache Kafka is a distributed streaming platform that is used to send data between applications in real-time.
 In this tutorial, we are going to use Apache Kafka to communicate our different threads using multiple consumers to read
 messages from same channel."
+type: book
 authors: ["admin"]
 tags: ["spring boot", "kafka"]
 categories: ["integration"]
 date: 2020-07-17T01:11:38+03:00
 lastmod: 2020-07-17T01:11:38+03:00
-featured: false
-draft: false
-
 # Featured image
 # To use, add an image named `featured.jpg/png` to your page's folder.
 # Focal points: Smart, Center, TopLeft, Top, TopRight, Left, Right, BottomLeft, Bottom, BottomRight.

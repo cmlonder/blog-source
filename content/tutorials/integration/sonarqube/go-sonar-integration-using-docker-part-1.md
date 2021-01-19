@@ -12,8 +12,7 @@ tags: ["sonar", "go", "docker"]
 categories: ["integration", "code quality", "continuous integration"]
 date: 2020-07-12T01:28:56+03:00
 lastmod: 2020-07-12T01:28:56+03:00
-featured: true
-draft: false
+type: book
 
 # Featured image
 # To use, add an image named `featured.jpg/png` to your page's folder.
